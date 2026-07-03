@@ -7,6 +7,7 @@ import type {
 
 type InputFieldProps<T extends FieldValues> = {
   label: string;
+  optional?: boolean;
   id: Path<T>;
   type?: string;
   placeholder?: string;
@@ -23,16 +24,18 @@ const InputField = <T extends FieldValues>({
   register,
   errors,
   hint,
+  optional
 }: InputFieldProps<T>) => {
   return (
     <div>
-      <label className="label-sm" htmlFor={id}>
+      <label className="flex justify-between label-sm mb-1.5 " htmlFor={id}>
         {label}
+        {optional && <span className="slate-2"> Optional</span>}
       </label>
 
       <input
         {...register(id)}
-        className="input-field-custom"
+        className={`input-field-custom ${optional ? "h-44" : ""}`} 
         id={id}
         type={type}
         placeholder={placeholder}

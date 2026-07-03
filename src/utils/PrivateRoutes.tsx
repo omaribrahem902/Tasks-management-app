@@ -16,7 +16,8 @@ const PrivateRoutes = () => {
         <Navbar
           openSidebar={() => setIsSidebarOpen(true)}
         />
-        <main>
+        <hr />
+        <main className="flex-1 relative">
           {/* Overlay */}
           {isSidebarOpen && (
             <div
@@ -24,7 +25,7 @@ const PrivateRoutes = () => {
               onClick={() => setIsSidebarOpen(false)}
             />
           )}
-          <section className= "p-8">
+          <section className= "flex flex-col justify-center  h-full p-6 md:p-8 background">
             <Outlet />
           </section>
         </main>

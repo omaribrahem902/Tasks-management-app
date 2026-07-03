@@ -18,22 +18,27 @@ import {useNavigate} from "react-router-dom";
 const sidebarLinks = [
   {
     title: "Projects",
+    link: "/project",
     icon: FolderOpen,
   },
   {
     title: "Project Epics",
+    link: "/project/epics",
     icon: Boxes,
   },
   {
     title: "Project Tasks",
+    link: "/project/tasks",
     icon: CheckCheck,
   },
   {
     title: "Project Members",
+    link: "/project/members",
     icon: Users,
   },
   {
     title: "Project Details",
+    link: "/project/details",
     icon: CircleAlert,
   },
 ];
@@ -47,6 +52,11 @@ const Sidebar = ({isOpen}: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selected, setSelected] = useState(0);
   const navigate = useNavigate();
+
+const handleClick = (index: number,link: string) => {
+  setSelected(index);
+  navigate(link);
+};
 
 const logoutMutation = useMutation({
   mutationFn: logoutAPI,
@@ -89,7 +99,7 @@ const logoutMutation = useMutation({
                           : "hover:bg-white/70 text-slate-700",
                         collapsed && "justify-center",
                       )}
-                      onClick={() => setSelected(index)}
+                      onClick={() => handleClick(index,link.link)}
                     >
                       <Icon size={20} />
 
@@ -138,7 +148,7 @@ const logoutMutation = useMutation({
 
       {/* Bottom Mobile Navigation */}
       {!isOpen && (
-        <nav className="max-w-screen md:hidden fixed surface-low bottom-0 w-full">
+        <nav className="max-w-screen md:hidden fixed surface-low bottom-0 w-full z-10">
           <ul className="flex justify-center gap-10 py-3.5 px-4">
             {sidebarLinks.map((link, index) => {
               const Icon = link.icon;

@@ -23,7 +23,6 @@ export const signUpAPI = async (data: {
     throw new Error(error.message);
   }
 
-  localStorage.setItem("token", resData.session?.access_token || "");
 
   return resData;
 };

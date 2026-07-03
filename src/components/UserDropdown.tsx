@@ -19,7 +19,6 @@ const UserMenu = () => {
 
       {open && (
         <>
-          {/* Overlay لإغلاق القائمة عند الضغط خارجها */}
           <div
             className="fixed inset-0 z-10"
             onClick={() => setOpen(false)}

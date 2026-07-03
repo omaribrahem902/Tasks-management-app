@@ -101,7 +101,7 @@ const logoutMutation = useMutation({
         <div className="hidden md:flex flex-col items-end">
           <p className="body-md">
             {loading
-              ? "Loading..."
+              ? ""
               : name}
           </p>
 
@@ -116,7 +116,9 @@ const logoutMutation = useMutation({
           }
           className="ml-4 primary-container rounded-lg w-10 h-10 center-flex text-white font-semibold"
         >
-          {initials}
+          {loading
+              ? ""
+              : initials}
         </button>
 
         {isOpen && (
