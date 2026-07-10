@@ -1,4 +1,4 @@
-import { supabase } from "../../supabase-client";
+import {getSession} from "../../utils/getSession";
 
 interface AddNewProjectPayload {
   name: string;
@@ -8,14 +8,7 @@ interface AddNewProjectPayload {
 export const addNewProjectAPI = async (
   data: AddNewProjectPayload
 ) => {
-  const {
-    data: { session },
-  } = await supabase.auth.getSession();
-
-  if (!session) {
-    throw new Error("User is not authenticated.");
-  }
-
+  const session = await getSession();
   const res = await fetch(
     `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/projects`,
     {

@@ -17,12 +17,22 @@ const Projects = () => {
   const [error, setError] = useState(false);
   const navigate = useNavigate();
   const [projects, setProjects] = useState([]);
+  const [data, setData] = useState({ projects: [], totalCount: 0 });
+  const [showedProjects, setShowedProjects] = useState<number>(0);
+  const limit = 6;
+  const totalPages = Math.ceil(data.totalCount / limit);
   const mutation = useMutation({
-    mutationFn: getProjectsAPI,
+    mutationFn: ({ limit, offset }: { limit: number; offset: number }) => getProjectsAPI(limit, offset),
     onSuccess: (data) => {
-      setProjects(data);
-      console.log("Projects fetched successfully");
-      console.log(data);
+      setProjects(data.projects);
+      setData(data);
+      if(data.projects.length < 6){
+        setShowedProjects(data.projects.length)
+      }else{
+        setShowedProjects(6)
+      }
+      // console.log("Projects fetched successfully");
+      // console.log(data);
     },
     onMutate: () => {
       setLoading(true);
@@ -35,9 +45,10 @@ const Projects = () => {
     },
   });
 
+  
   useEffect(() => {
-    mutation.mutate();
-  }, []);
+    mutation.mutate({ limit: limit, offset: (page - 1) * limit });
+  }, [page]);
 
   return (
     <>
@@ -83,7 +94,8 @@ const Projects = () => {
                           <ProjectTask key={index} project={project} />
                         ),
                       )}
-                      <div className="h-55 hidden md:flex flex-col justify-center items-center gap-4 rounded-lg shadow-sm">
+                      {data.projects.length < 6 && (
+                        <div className="h-55 hidden md:flex flex-col justify-center items-center gap-4 rounded-lg shadow-sm">
                         <span onClick={()=>navigate("/project/add")} className="flex items-center justify-center p-3.5 rounded-lg surface-low cursor-pointer">
                           <CirclePlus
                             size={20}
@@ -93,14 +105,16 @@ const Projects = () => {
                         </span>
                         <span className="font-bold text-[14px]">ADD PROJECT</span>
                       </div>
+                      )}
+                      
                     </div>
                     <div className="hidden md:flex items-center justify-between px-8 mb-12 md:mb-0 justify-self-end ">
                       <span className="body-md text-[#434654]">
-                        Showing 5 of 24 active projects
+                        Showing {showedProjects} of {data.totalCount} active projects
                       </span>
                       <Pagination
                         currentPage={page}
-                        totalPages={2}
+                        totalPages={totalPages}
                         onPageChange={setPage}
                       />
                     </div>

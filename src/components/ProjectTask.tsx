@@ -17,8 +17,6 @@ const ProjectTask = ({
     year: "numeric",
   }).format(new Date(project.created_at));
 
-  console.log("ProjectTask component rendered with project:", project);
-
   return (
     <div className="h-55 flex flex-col p-6 bg-white rounded-lg shadow-sm">
       <h2 className="title-md mb-6">
