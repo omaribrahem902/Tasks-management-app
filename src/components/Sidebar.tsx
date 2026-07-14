@@ -14,31 +14,32 @@ import { tasklyIcon } from "../assets/icons";
 import { useMutation } from "@tanstack/react-query";
 import { logoutAPI } from "../auth/logout/logout";
 import {useNavigate} from "react-router-dom";
+import { useProjectStore } from "../stores/useProjectStore";
 
 const sidebarLinks = [
   {
     title: "Projects",
-    link: "/project",
+    link: "/projects",
     icon: FolderOpen,
   },
   {
     title: "Project Epics",
-    link: "/project/epics",
+    link: "/epics",
     icon: Boxes,
   },
   {
     title: "Project Tasks",
-    link: "/project/tasks",
+    link: "/tasks",
     icon: CheckCheck,
   },
   {
     title: "Project Members",
-    link: "/project/members",
+    link: "/members",
     icon: Users,
   },
   {
     title: "Project Details",
-    link: "/project/details",
+    link: "/details",
     icon: CircleAlert,
   },
 ];
@@ -52,10 +53,11 @@ const Sidebar = ({isOpen}: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selected, setSelected] = useState(0);
   const navigate = useNavigate();
+  const currentProject = useProjectStore((state) => state.currentProject);
 
 const handleClick = (index: number,link: string) => {
   setSelected(index);
-  navigate(link);
+  navigate(`project/${currentProject?.id}${link}`);
 };
 
 const logoutMutation = useMutation({

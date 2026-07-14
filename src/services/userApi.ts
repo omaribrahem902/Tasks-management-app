@@ -1,4 +1,3 @@
-// services/userApi.ts
 
 export const getUser = async () => {
   const response = await fetch(
