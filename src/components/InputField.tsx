@@ -14,6 +14,7 @@ type InputFieldProps<T extends FieldValues> = {
   register: UseFormRegister<T>;
   errors: FieldErrors<T>;
   hint?: string;
+  value?: string;
 };
 
 const InputField = <T extends FieldValues>({
@@ -24,7 +25,8 @@ const InputField = <T extends FieldValues>({
   register,
   errors,
   hint,
-  optional
+  optional,
+  value,
 }: InputFieldProps<T>) => {
   return (
     <div>
@@ -39,6 +41,7 @@ const InputField = <T extends FieldValues>({
         id={id}
         type={type}
         placeholder={placeholder}
+        value={value}
       />
 
       {errors[id] ? (

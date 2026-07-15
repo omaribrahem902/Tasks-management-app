@@ -11,6 +11,7 @@ import EpicsPage from "./pages/EpicsPage";
 import MembersPage from "./pages/MembersPage";
 import DetailsPage from "./pages/DetailsPage";
 import TasksPage from "./pages/TasksPage";
+import EditProjectPage from "./pages/editProject/EditProject";
 
 export default function AppRoutes() {
 
@@ -24,6 +25,7 @@ export default function AppRoutes() {
         <Route path="/project/:projectId/members" element={<MembersPage />} />
         <Route path="/project/:projectId/tasks" element={<TasksPage />} />
         <Route path="/project/:projectId/details" element={<DetailsPage />} />
+        <Route path="/project/:projectId/edit" element={<EditProjectPage />} />
       </Route>
 
       <Route path="/login" element={<AuthLayout children={<Login />} />} />
