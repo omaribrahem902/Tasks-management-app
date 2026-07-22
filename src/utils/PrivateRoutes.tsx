@@ -25,7 +25,7 @@ const PrivateRoutes = () => {
               onClick={() => setIsSidebarOpen(false)}
             />
           )}
-          <section className= "flex flex-col justify-center h-full p-6 md:p-8 background">
+          <section className= "flex flex-col justify-start h-full p-6 md:p-8 background">
             <Outlet />
           </section>
         </main>

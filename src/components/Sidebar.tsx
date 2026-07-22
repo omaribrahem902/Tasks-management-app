@@ -18,8 +18,8 @@ import { useProjectStore } from "../stores/useProjectStore";
 
 const sidebarLinks = [
   {
-    title: "Projects",
-    link: "/projects",
+    title: "Project",
+    link: "/project",
     icon: FolderOpen,
   },
   {
@@ -57,6 +57,10 @@ const Sidebar = ({isOpen}: SidebarProps) => {
 
 const handleClick = (index: number,link: string) => {
   setSelected(index);
+  if (link === "/project") {
+    navigate(link);
+    return;
+  }
   navigate(`project/${currentProject?.id}${link}`);
 };
 
