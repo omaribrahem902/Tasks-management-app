@@ -8,7 +8,7 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import AuthLayout from "./auth/AuthLayout";
 import AddProject from "./pages/addNewProjectpage/AddProject";
 import EpicsPage from "./pages/EpicsPage";
-import MembersPage from "./pages/MembersPage";
+import MembersPage from "./pages/members/MembersPage";
 import DetailsPage from "./pages/DetailsPage";
 import TasksPage from "./pages/TasksPage";
 import EditProjectPage from "./pages/editProject/EditProject";

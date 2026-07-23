@@ -1,4 +1,4 @@
-const ErrorProjectPage = () => {
+const ErrorPage = () => {
   return (
     <div className="flex flex-col justify-center items-center gap-11">
       <img
@@ -22,4 +22,4 @@ const ErrorProjectPage = () => {
   );
 };
 
-export default ErrorProjectPage;
+export default ErrorPage;

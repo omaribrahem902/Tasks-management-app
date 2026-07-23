@@ -166,7 +166,7 @@ const logoutMutation = useMutation({
                       " flex flex-col justify-center items-center gap-1 transition-all",
                       index === selected ? " text-blue-700" : " text-slate-700",
                     )}
-                    onClick={() => setSelected(index)}
+                    onClick={() => handleClick(index, link.link)}
                   >
                     <Icon size={18} />    
                     <span className="text-[10px] font-semibold">{text}</span>

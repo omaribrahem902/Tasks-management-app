@@ -35,7 +35,7 @@ const ProjectTask = ({ project }: { project: ProjectTaskProps }) => {
   return (
     <div
       onClick={handleClick}
-      className={`h-55 flex flex-col p-6 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-xl transition-transform hover:scale-110 duration-300 ${currentProject?.id === project.id ? " scale-110 shadow-xl" : ""} `}
+      className={`h-55 flex flex-col p-6 bg-white rounded-lg shadow-sm cursor-pointer hover:shadow-xl transition-transform hover:scale-110 duration-300 ${currentProject?.id === project.id ? " scale-105 lg:scale-110 shadow-xl" : ""} `}
     >
       <div className="flex justify-between items-start ">
         <h2 className="title-md mb-6">{project.name}</h2>

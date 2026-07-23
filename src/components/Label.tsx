@@ -1,7 +1,15 @@
-const Label = () => {
-  return (
-    <div className="w-fit label-sm capitalize py-1 px-3 rounded-2xl">owner</div>
-  )
+interface LabelProps {
+  text: string;
 }
 
-export default Label
+const Label = ({ text }: LabelProps) => {
+  return (
+    <div
+      className={`${text === "owner" ? "primary-container text-white" : "surface-highest"} w-fit font-bold text-[10px] uppercase py-1 px-3 lg:rounded-2xl`}
+    >
+      {text}
+    </div>
+  );
+};
+
+export default Label;

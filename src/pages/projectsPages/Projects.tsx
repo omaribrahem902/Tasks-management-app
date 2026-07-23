@@ -9,7 +9,7 @@ import ProjectSkeleton from "../../components/ProjectSkeleton";
 import ProjectTask, {type ProjectTaskProps,} from "../../components/ProjectTask";
 
 import EmptyProjectPage from "./EmptyProjectPage";
-import ErrorProjectPage from "./ErrorProjectPage";
+import ErrorPage from "../ErrorPage";
 import { getProjectsAPI } from "./getProjectsAPI";
 
 const LIMIT = 6;
@@ -115,7 +115,11 @@ const Projects = () => {
   }, [isMobile, loading, page, totalPages]);
 
   if (error) {
-    return <ErrorProjectPage />;
+    return (
+      <div className="h-full flex justify-center items-center">
+        <ErrorPage />
+      </div>
+    );
   }
 
   if (loading && !isMobile) {
