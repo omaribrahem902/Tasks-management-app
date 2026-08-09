@@ -15,6 +15,7 @@ import { getProjectsAPI } from "./getProjectsAPI";
 const LIMIT = 6;
 
 const Projects = () => {
+
   const navigate = useNavigate();
 
   const isMobile = useMemo(

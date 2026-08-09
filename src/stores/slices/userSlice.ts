@@ -1,4 +1,3 @@
-// store/slices/userSlice.ts
 
 import {
   createSlice,
@@ -18,12 +17,6 @@ export const fetchUser =
     }
   );
 
-
-// interface User {
-//   id: string;
-//   name: string;
-//   email: string;
-// }
 
 interface UserState {
   data: User | null;

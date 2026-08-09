@@ -29,7 +29,7 @@ const Login = () => {
     mutationFn: loginAPI,
     onSuccess: () => {
       console.log("User logged in successfully");
-      navigate("/projects");
+      navigate("/project");
     }
   });
 

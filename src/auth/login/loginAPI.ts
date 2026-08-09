@@ -14,7 +14,7 @@ export const loginAPI = async (data: {
     throw new Error(error.message);
   }
     localStorage.setItem("token", userData.session.access_token);
-
+    
 
   return userData;
 };

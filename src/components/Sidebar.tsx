@@ -56,6 +56,9 @@ const Sidebar = ({isOpen}: SidebarProps) => {
   const currentProject = useProjectStore((state) => state.currentProject);
 
 const handleClick = (index: number,link: string) => {
+  if(currentProject == undefined && link !== "/project") {
+    return;
+  }
   setSelected(index);
   if (link === "/project") {
     navigate(link);

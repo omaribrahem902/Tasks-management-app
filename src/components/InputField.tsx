@@ -29,7 +29,7 @@ const InputField = <T extends FieldValues>({
   value,
 }: InputFieldProps<T>) => {
   return (
-    <div>
+    <div className="mt-4">
       <label className="flex justify-between label-sm mb-1.5 " htmlFor={id}>
         {label}
         {optional && <span className="slate-2"> Optional</span>}

@@ -10,12 +10,14 @@ import ErrorPage from "../ErrorPage";
 
 const MembersPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
-  
+
   const { data, isLoading, error } = useQuery({
     queryKey: ["members", projectId],
-    queryFn: () => getMembers(projectId as string),
+    queryFn: () => getMembers(projectId as string), 
+    
   });
-
+  
+console.log(data, "members data");
   if (isLoading) {
     return <MembersPageSkeleton />;
   }

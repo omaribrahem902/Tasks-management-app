@@ -18,7 +18,7 @@ const ProjectTask = ({ project }: { project: ProjectTaskProps }) => {
   }).format(new Date(project.created_at));
   const currentProject = useProjectStore((state) => state.currentProject);
   const setCurrentProject = useProjectStore((state) => state.setCurrentProject);
- 
+  
   const handleClick = () => {
     if (currentProject?.id === project.id) {
       setCurrentProject(null);

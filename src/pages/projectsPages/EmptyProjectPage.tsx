@@ -6,7 +6,7 @@ const EmptyProjectPage = () => {
   return (
     <div className="flex flex-col justify-center items-center gap-11">
       <img
-        src="../../public/Empty_project_page.png"
+        src="Empty_project_page.png"
         alt="No projects available"
       />
       <div className="text-center">
