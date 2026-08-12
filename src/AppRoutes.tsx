@@ -13,6 +13,7 @@ import DetailsPage from "./pages/DetailsPage";
 import TasksPage from "./pages/TasksPage";
 import EditProjectPage from "./pages/editProject/EditProject";
 import CreateNewEpic from "./pages/createNewEpic/CreateNewEpic";
+import ProjectEpics from "./pages/projectEpics/ProjectEpics";
 
 export default function AppRoutes() {
 
@@ -22,12 +23,13 @@ export default function AppRoutes() {
         <Route path="/" element={<Navigate to="/project" />} />
         <Route path="/project" element={<Projects />} />
         <Route path="/project/add" element={<AddProject />} />
-        <Route path="/project/:projectId/epics" element={<EpicsPage />} />
+        {/* <Route path="/project/:projectId/epics" element={<EpicsPage />} /> */}
         <Route path="/project/:projectId/members" element={<MembersPage />} />
         <Route path="/project/:projectId/tasks" element={<TasksPage />} />
         <Route path="/project/:projectId/details" element={<DetailsPage />} />
         <Route path="/project/:projectId/edit" element={<EditProjectPage />} />
         <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />} />
+        <Route path="/project/:projectId/epics" element={<ProjectEpics />} />
       </Route>
 
       <Route path="/login" element={<AuthLayout children={<Login />} />} />
