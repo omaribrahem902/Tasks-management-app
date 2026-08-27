@@ -14,7 +14,7 @@ const Breadcrumb = () => {
     .filter(Boolean);
 
   return (
-    <div className="flex items-center gap-2">
+    <div className="hidden md:flex items-center gap-2 ">
       {pathnames.map((segment, index) => {
         const routeTo =
           "/" + pathnames.slice(0, index + 1).join("/");

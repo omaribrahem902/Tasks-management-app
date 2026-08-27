@@ -12,6 +12,7 @@ import ErrorPage from "../ErrorPage";
 import MembersPageSkeleton from "../../components/MembersPageSkeleton";
 import { createNewEpicsSchema, getToday } from "./createNewEpicSchema";
 import { useProjectStore } from "../../stores/useProjectStore";
+import { ChevronDown } from "lucide-react";
 
 type FormData = z.infer<typeof createNewEpicsSchema>;
 
@@ -118,23 +119,31 @@ const CreateNewEpic = () => {
 
             <div className="flex flex-col lg:flex-row gap-8 ">
               {/* Assignee */}
-              <div className="flex flex-1 flex-col gap-2">
+              <div className="relative flex flex-1 flex-col gap-2">
                 <label htmlFor="assigneeId" className="label-sm">
                   ASSIGNEE
                 </label>
 
                 <select
                   id="assigneeId"
+                  defaultValue=""
                   {...register("assigneeId")}
-                  className="input-field-custom"
+                  className="input-field-custom appearance-none"
                 >
-                  <option value="">Select an assignee</option>
+                  <option value="" disabled hidden>
+                    Select an assignee
+                  </option>
+
                   {data?.map((member) => (
                     <option key={member.member_id} value={member.user_id}>
                       {member.metadata.name}
                     </option>
                   ))}
                 </select>
+                <ChevronDown
+                  className="pointer-events-none absolute right-3 top-1/2"
+                  size={18}
+                />
 
                 {errors.assigneeId && (
                   <p className="text-sm text-red-500">

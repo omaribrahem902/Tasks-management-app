@@ -16,9 +16,14 @@ export interface EpicProps {
   created_at: string;
 }
 
-const Epic = ({epic}: {epic: EpicProps}) => {
+interface EpicComponentProps {
+  epic: EpicProps;
+  onClick: () => void;
+}
+
+const Epic = ({epic, onClick}: EpicComponentProps) => {
   return (
-      <div className="h-55 flex flex-col p-4 bg-white border-l-4 border-[#004E32] rounded-md  shadow-sm cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300">
+      <div onClick={onClick} className="h-55 flex flex-col p-4 bg-white border-l-4 border-[#004E32] rounded-md  shadow-sm cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300">
         <div className="flex justify-between items-start mb-4">
         <span className="py-1 px-2.5 success label-sm rounded-xs">{epic.epic_id}</span>
         <EllipsisVertical color="#041B3C33" />

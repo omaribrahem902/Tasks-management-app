@@ -1,10 +1,12 @@
 interface BoxNameProps {
   name?: string;
+  size?: number;
+  fontTheme?: string;
 }
-const BoxName = ({ name = "" }: BoxNameProps) => {
+const BoxName = ({ name = "", size = 12, fontTheme = "" }: BoxNameProps) => {
   if (!name) {
     return (
-      <button className="primary-container rounded-lg w-12 h-12 center-flex text-white font-semibold">
+      <button className={`primary-container rounded-lg w-${size} h-${size} center-flex text-white font-semibold`}>
       </button>
     );
   }
@@ -14,7 +16,7 @@ const BoxName = ({ name = "" }: BoxNameProps) => {
     .join("")
     .toUpperCase();
   return (
-    <button className="primary-container rounded-lg w-12 h-12 center-flex text-white font-semibold">
+    <button className={`primary-container ${fontTheme} rounded-lg w-${size} h-${size} center-flex text-white font-semibold`}>
       {initials}
     </button>
   );
