@@ -1,6 +1,7 @@
 import { SquarePen } from "lucide-react";
-import { useProjectStore } from "../stores/useProjectStore";
+import { useProjectStore } from "../../stores/useProjectStore";
 import { useNavigate } from "react-router";
+import { formatDate } from "../../utils/formatDate";
 export interface ProjectTaskProps {
   id: string;
   name: string;
@@ -11,11 +12,7 @@ export interface ProjectTaskProps {
 
 const ProjectTask = ({ project }: { project: ProjectTaskProps }) => {
   const navigate = useNavigate();
-  const formattedDate = new Intl.DateTimeFormat("en-US", {
-    day: "2-digit",
-    month: "short",
-    year: "numeric",
-  }).format(new Date(project.created_at));
+  const formattedDate = formatDate(project.created_at);
   const currentProject = useProjectStore((state) => state.currentProject);
   const setCurrentProject = useProjectStore((state) => state.setCurrentProject);
   

@@ -7,13 +7,13 @@ import Projects from "./pages/projectsPages/Projects";
 import PrivateRoutes from "./utils/PrivateRoutes";
 import AuthLayout from "./auth/AuthLayout";
 import AddProject from "./pages/addNewProjectpage/AddProject";
-import EpicsPage from "./pages/EpicsPage";
 import MembersPage from "./pages/members/MembersPage";
 import DetailsPage from "./pages/DetailsPage";
-import TasksPage from "./pages/TasksPage";
 import EditProjectPage from "./pages/editProject/EditProject";
 import CreateNewEpic from "./pages/createNewEpic/CreateNewEpic";
-import ProjectEpics from "./pages/projectEpics/ProjectEpics";
+import ProjectEpics from "./pages/projectEpics/projectEpicsPage/ProjectEpics";
+import AddNewTask from "./pages/addNewTaskPage/AddNewTask";
+import ProjectTasks from "./pages/projectTasksPage/ProjectTasksPage";
 
 export default function AppRoutes() {
 
@@ -23,26 +23,19 @@ export default function AppRoutes() {
         <Route path="/" element={<Navigate to="/project" />} />
         <Route path="/project" element={<Projects />} />
         <Route path="/project/add" element={<AddProject />} />
-        {/* <Route path="/project/:projectId/epics" element={<EpicsPage />} /> */}
         <Route path="/project/:projectId/members" element={<MembersPage />} />
-        <Route path="/project/:projectId/tasks" element={<TasksPage />} />
+        <Route path="/project/:projectId/tasks" element={<ProjectTasks />} />
         <Route path="/project/:projectId/details" element={<DetailsPage />} />
         <Route path="/project/:projectId/edit" element={<EditProjectPage />} />
-        <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />} />
+        <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />}/>
         <Route path="/project/:projectId/epics" element={<ProjectEpics />} />
+        <Route path="/project/:projectId/tasks/new" element={<AddNewTask />} />
       </Route>
 
       <Route path="/login" element={<AuthLayout children={<Login />} />} />
       <Route path="/signup" element={<AuthLayout children={<SignUp />} />} />
-      <Route
-        path="/forgot-password"
-        element={<AuthLayout children={<ForgotPassword />} />}
-      />
-      <Route
-        path="/create-new-password"
-        element={<AuthLayout children={<CreateNewPassword />} />}
-      />
-      {/* <Route path="/projects" element={<Projects />} /> */}
+      <Route path="/forgot-password" element={<AuthLayout children={<ForgotPassword />} />} />
+      <Route path="/create-new-password" element={<AuthLayout children={<CreateNewPassword />} />}/>
     </Routes>
   );
 }

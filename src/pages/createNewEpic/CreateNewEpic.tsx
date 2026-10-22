@@ -9,17 +9,18 @@ import { useMutation, useQuery } from "@tanstack/react-query";
 import { toast, Toaster } from "react-hot-toast";
 import { getMembers } from "../members/getMembersAPI";
 import ErrorPage from "../ErrorPage";
-import MembersPageSkeleton from "../../components/MembersPageSkeleton";
+import MembersPageSkeleton from "../members/MembersPageSkeleton";
 import { createNewEpicsSchema, getToday } from "./createNewEpicSchema";
 import { useProjectStore } from "../../stores/useProjectStore";
 import { ChevronDown } from "lucide-react";
+import type { Member } from "../members/MembersPage";
 
 type FormData = z.infer<typeof createNewEpicsSchema>;
 
-const createNewEpicsFields: {label: string;id: "name" | "description";}[] = [
+const createNewEpicsFields: {label: string;id: "title" | "description";}[] = [
   {
     label: "EPIC NAME",
-    id: "name",
+    id: "title",
   },
   {
     label: "DESCRIPTION",
@@ -58,7 +59,7 @@ const CreateNewEpic = () => {
 
   const onSubmit = (data: FormData) => {
     mutation.mutate({
-      name: data.name,
+      title: data.title,
       description: data.description,
       assigneeId: data.assigneeId,
       deadline: data.deadline,
@@ -134,7 +135,7 @@ const CreateNewEpic = () => {
                     Select an assignee
                   </option>
 
-                  {data?.map((member) => (
+                  {data?.map((member : Member) => (
                     <option key={member.member_id} value={member.user_id}>
                       {member.metadata.name}
                     </option>

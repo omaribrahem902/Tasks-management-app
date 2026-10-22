@@ -5,7 +5,14 @@ import App from "./App.tsx";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import { BrowserRouter } from "react-router-dom";
 import Providers from "./providers/Providers.tsx";
-const queryClient = new QueryClient();
+const queryClient = new QueryClient({
+  defaultOptions: {
+    queries: {
+      retry: 2,
+      staleTime: 1000 * 60 * 2, // دقيقتين
+    },
+  },
+});
 
 createRoot(document.getElementById("root")!).render(
   <StrictMode>

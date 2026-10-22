@@ -16,7 +16,7 @@ const BoxName = ({ name = "", size = 12, fontTheme = "" }: BoxNameProps) => {
     .join("")
     .toUpperCase();
   return (
-    <button className={`primary-container ${fontTheme} rounded-lg w-${size} h-${size} center-flex text-white font-semibold`}>
+    <button className={` primary-container ${fontTheme} rounded-lg w-${size} h-${size} center-flex text-white font-semibold`}>
       {initials}
     </button>
   );

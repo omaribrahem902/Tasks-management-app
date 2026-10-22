@@ -3,21 +3,26 @@ import { useParams } from "react-router-dom";
 import Breadcrumb from "../../components/BreadCrumbs";
 import BoxName from "../../components/BoxName";
 import Label from "../../components/Label";
-import { getMembers } from "./getMembersAPI";
-import { useQuery } from "@tanstack/react-query";
-import MembersPageSkeleton from "../../components/MembersPageSkeleton";
+import MembersPageSkeleton from "./MembersPageSkeleton";
 import ErrorPage from "../ErrorPage";
+import { useProjectMembers } from "../../hooks/useProjectMembers";
+
+export interface Member {
+  user_id: string;
+  email: string;
+  role: string;
+  member_id: string;
+  metadata: {
+    name: string;
+  };
+}
 
 const MembersPage = () => {
   const { projectId } = useParams<{ projectId: string }>();
 
-  const { data, isLoading, error } = useQuery({
-    queryKey: ["members", projectId],
-    queryFn: () => getMembers(projectId as string), 
-    
-  });
-  
-console.log(data, "members data");
+  const { data: members, isLoading, error } = useProjectMembers(projectId!);
+
+  console.log(members, "members page");
   if (isLoading) {
     return <MembersPageSkeleton />;
   }
@@ -29,7 +34,7 @@ console.log(data, "members data");
       </div>
     );
   }
-  console.log(data, "members data");
+  console.log(members, "members data");
 
   return (
     <>
@@ -47,33 +52,39 @@ console.log(data, "members data");
       </div>
       <div>
         <section className="flex justify-center ">
-          <table className="lg:w-[785px] shadow-md rounded-md overflow-clip">
+          <table className="lg:w-196.25 shadow-md rounded-md overflow-clip">
             <thead className="hidden md:block">
-              <tr className="grid grid-cols-3 justify-center items-center py-5 px-[52px] bg-[#E0E8FF4D] label-sm ">
+              <tr className="grid grid-cols-3 justify-center items-center py-5 px-13 bg-[#E0E8FF4D] label-sm ">
                 <th className="flex justify-start ">MEMBERS</th>
                 <th>ROLE</th>
                 <th className="flex justify-end">ACTOINS</th>
               </tr>
             </thead>
             <tbody className="flex flex-col gap-3">
-              {data?.map((member) => (<>
-              <tr key={member.id} className="relative bg-white grid grid-cols-2 md:grid-cols-3 justify-center items-end md:items-center p-4 md:p-0 border-b">
-                <td className="w-fit flex gap-4 justify-center items-center md:py-5 md:px-9">
-                  <BoxName name={member.metadata.name} />
-                  <div>
-                    <h4 className="font-semibold text-[14px]">{member.metadata.name}</h4>
-                    <p className="slate-4 text-[12px]">{member.email}</p>
-                  </div>
-                </td>
-                <td className="absolute top-5 right-4 md:static flex justify-center items-center">
-                  <Label text={member.role} />
-                </td>
-                <td className="flex justify-end items-center md:pr-8 cursor-pointer">
-                  <EllipsisVertical size={20} />
-                </td>
-              </tr>
-              </>))}
-              
+              {members?.map((member: Member) => (
+                <>
+                  <tr
+                    key={member.member_id}
+                    className="relative bg-white grid grid-cols-2 md:grid-cols-3 justify-center items-end md:items-center p-4 md:p-0 border-b"
+                  >
+                    <td className="w-fit flex gap-4 justify-center items-center md:py-5 md:px-9">
+                      <BoxName name={member.metadata.name} />
+                      <div>
+                        <h4 className="font-semibold text-[14px]">
+                          {member.metadata.name}
+                        </h4>
+                        <p className="slate-4 text-[12px]">{member.email}</p>
+                      </div>
+                    </td>
+                    <td className="absolute top-5 right-4 md:static flex justify-center items-center">
+                      <Label text={member.role} />
+                    </td>
+                    <td className="flex justify-end items-center md:pr-8 cursor-pointer">
+                      <EllipsisVertical size={20} />
+                    </td>
+                  </tr>
+                </>
+              ))}
             </tbody>
           </table>
         </section>

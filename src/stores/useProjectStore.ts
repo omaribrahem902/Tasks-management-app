@@ -1,6 +1,7 @@
 import { create } from "zustand";
-import type { ProjectTaskProps } from "../components/ProjectTask";
+import type { ProjectTaskProps } from "../pages/projectsPages/ProjectTask";
 import { persist } from "zustand/middleware";
+import type { epic } from "../pages/projectEpics/projectEpicsPage/Epic";
 interface ProjectStore {
   currentProject: ProjectTaskProps | null;
 
@@ -9,7 +10,7 @@ interface ProjectStore {
   clearCurrentProject: () => void;
 }
 
-type ProjectMembers = {
+export type ProjectMembers = {
   memberId: string;
   name: string;
 };
@@ -17,6 +18,12 @@ type ProjectMembers = {
 interface ProjectMembersStore {
   members: ProjectMembers[];
   setMembers: (members: ProjectMembers[]) => void;
+}
+
+interface selectedEpicStore {
+  selectedEpic: epic | null;
+  setSelectedEpic: (epic: epic | null) => void;
+  clearSelectedEpic: () => void;
 }
 
 export const useProjectStore = create<ProjectStore>()(
@@ -39,4 +46,10 @@ export const useProjectStore = create<ProjectStore>()(
 export const useProjectMembersStore = create<ProjectMembersStore>((set) => ({
   members: [],
   setMembers: (members) => set({ members }),
+}));
+
+export const useSelectedEpicStore = create<selectedEpicStore>((set) => ({
+  selectedEpic: null,
+  setSelectedEpic: (epic) => set({ selectedEpic: epic }),
+  clearSelectedEpic: () => set({ selectedEpic: null }),
 }));

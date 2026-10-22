@@ -12,7 +12,7 @@ export const getToday = () => {
 };
 
 export const createNewEpicsSchema = z.object({
-  name: titleField,
+  title: titleField,
 
   description: descriptionField,
 

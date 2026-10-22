@@ -2,6 +2,8 @@ import { getSession } from "../../utils/getSession";
 
 export const getProjectsAPI = async (limit: number, offset: number ) => {
   const session = await getSession();
+  console.log("session:", session);
+console.log("access token:", session?.access_token);
   const response = await fetch(
     `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/rpc/get_projects?limit=${limit}&offset=${offset}`,
     {
@@ -23,7 +25,6 @@ export const getProjectsAPI = async (limit: number, offset: number ) => {
   const contentRange = response.headers.get("Content-Range");
 
   const totalCount = contentRange ? Number(contentRange.split("/")[1]) : 0;
-
   return {
     projects,
     totalCount,

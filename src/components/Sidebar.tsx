@@ -29,7 +29,7 @@ const sidebarLinks = [
   },
   {
     title: "Project Tasks",
-    link: "/tasks",
+    link: "/tasks?view=board",
     icon: CheckCheck,
   },
   {

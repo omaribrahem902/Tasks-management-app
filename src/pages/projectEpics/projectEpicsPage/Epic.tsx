@@ -1,29 +1,37 @@
 import { EllipsisVertical, UserPen } from "lucide-react";
-import BoxName from "./BoxName";
-import { formatDate } from "../utils/formatDate";
+import BoxName from "../../../components/BoxName";
+import { formatDate } from "../../../utils/formatDate";
+import { useSelectedEpicStore } from "../../../stores/useProjectStore";
+import { memo } from "react";
 
 
-export interface EpicProps {
+export interface epic {
+  id: string;
   epic_id: string;
   title: string;
+  description?: string;
   assignee: {
     name: string;
     avatar: string;
+    sub: string | null;
   }
   created_by: {
     name: string;
   }
   created_at: string;
+  deadline?: string;
 }
 
 interface EpicComponentProps {
-  epic: EpicProps;
-  onClick: () => void;
+  epic: epic;
 }
 
-const Epic = ({epic, onClick}: EpicComponentProps) => {
+const Epic = ({epic}: EpicComponentProps) => {
+  const setSelectedEpic = useSelectedEpicStore(
+    (state) => state.setSelectedEpic,
+  );
   return (
-      <div onClick={onClick} className="h-55 flex flex-col p-4 bg-white border-l-4 border-[#004E32] rounded-md  shadow-sm cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300">
+      <div onClick={() => setSelectedEpic(epic)} className="h-55 flex flex-col p-4 bg-white border-l-4 border-[#004E32] rounded-md  shadow-sm cursor-pointer hover:shadow-xl transition-transform hover:scale-105 duration-300">
         <div className="flex justify-between items-start mb-4">
         <span className="py-1 px-2.5 success label-sm rounded-xs">{epic.epic_id}</span>
         <EllipsisVertical color="#041B3C33" />
@@ -51,4 +59,4 @@ const Epic = ({epic, onClick}: EpicComponentProps) => {
   )
 }
 
-export default Epic
+export default memo(Epic)

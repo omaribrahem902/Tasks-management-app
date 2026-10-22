@@ -1,7 +1,7 @@
 import { getSession } from "../../utils/getSession";
 
 interface CreateNewEpicPayload {
-  name: string;
+  title: string;
   description: string;
   assigneeId?: string;
   projectId: string;
@@ -14,7 +14,7 @@ export const createNewEpicAPI = async (
   const session = await getSession();
 
 const body = {
-  title: data.name,
+  title: data.title,
   description: data.description,
   assignee_id: data.assigneeId || null,
   project_id: data.projectId,

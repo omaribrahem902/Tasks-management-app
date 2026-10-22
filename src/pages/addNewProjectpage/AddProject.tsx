@@ -9,6 +9,7 @@ import InputField from "../../components/InputField";
 import { addNewProjectAPI } from "./addNewProjectApi";
 import { useNavigate } from "react-router";
 import { toast, Toaster } from "react-hot-toast";
+import { useQueryClient } from "@tanstack/react-query";
 
 type FormData = z.infer<typeof addNewProjectSchema>;
 
@@ -17,6 +18,7 @@ const addNewProjectFields: { label: string; id: keyof FormData }[] = [
   { label: "DESCRIPTION", id: "description" },
 ];
 const AddProject = () => {
+  const queryClient = useQueryClient();
   const navigate = useNavigate();
   const {
     register,
@@ -30,6 +32,7 @@ const AddProject = () => {
   const mutation = useMutation({
     mutationFn: addNewProjectAPI,
     onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: ["projects"] });
       reset();
       toast.success("Project created successfully");
     },
