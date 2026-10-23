@@ -1,9 +1,9 @@
 interface BoxNameProps {
-  name?: string;
+  name?: string | null | undefined;
   size?: number;
   fontTheme?: string;
 }
-const BoxName = ({ name = "", size = 12, fontTheme = "" }: BoxNameProps) => {
+const BoxName = ({ name , size = 12, fontTheme = "" }: BoxNameProps) => {
   if (!name) {
     return (
       <button className={`primary-container rounded-lg w-${size} h-${size} center-flex text-white font-semibold`}>

@@ -2,6 +2,7 @@ import { useParams, useSearchParams } from "react-router-dom";
 import ColumnView from "./ColumnView";
 import ProjectTasksHeader from "./ProjectTasksHeader";
 import TaskListView from "./TaskListView";
+import { TaskModalContainer } from "./taskModal";
 
 const STATUSES = [
   { key: "TO_DO", label: "To Do", color: "#3B82F6" },           
@@ -56,8 +57,11 @@ const ProjectTasks = () => {
           ))}
         </section>
       )}
+
+      {/* Task Details Popup */}
+      <TaskModalContainer />
     </>
   );
 };
 
-export default ProjectTasks;
+export default ProjectTasks;

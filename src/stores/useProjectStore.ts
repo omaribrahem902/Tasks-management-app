@@ -53,3 +53,21 @@ export const useSelectedEpicStore = create<selectedEpicStore>((set) => ({
   setSelectedEpic: (epic) => set({ selectedEpic: epic }),
   clearSelectedEpic: () => set({ selectedEpic: null }),
 }));
+
+export interface SelectedTaskInfo {
+  taskId: string;
+  projectId: string;
+}
+
+interface SelectedTaskStore {
+  selectedTask: SelectedTaskInfo | null;
+  setSelectedTask: (task: SelectedTaskInfo | null) => void;
+  clearSelectedTask: () => void;
+}
+
+export const useSelectedTaskStore = create<SelectedTaskStore>((set) => ({
+  selectedTask: null,
+  setSelectedTask: (task) => set({ selectedTask: task }),
+  clearSelectedTask: () => set({ selectedTask: null }),
+}));
+

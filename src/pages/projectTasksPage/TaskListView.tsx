@@ -6,6 +6,7 @@ import { formatDate } from "../../utils/formatDate";
 import BoxName from "../../components/BoxName";
 import Pagination from "../../components/Pagination";
 import ListViewSkeleton from "./ListViewSkeleton";
+import { useSelectedTaskStore } from "../../stores/useProjectStore";
 
 export interface ProjectTaskItem {
   id: string;
@@ -45,6 +46,7 @@ interface TaskListViewProps {
 
 const TaskListView = ({ projectId }: TaskListViewProps) => {
   const navigate = useNavigate();
+  const setSelectedTask = useSelectedTaskStore((state) => state.setSelectedTask);
 
   const { data, isLoading, isError, refetch } = useQuery({
     queryKey: ["projectTasks", projectId, "all"],
@@ -124,7 +126,8 @@ const TaskListView = ({ projectId }: TaskListViewProps) => {
               return (
                 <tr
                   key={task.id}
-                  className="hover:bg-slate-50/70 transition-colors"
+                  onClick={() => setSelectedTask({ taskId: task.id, projectId })}
+                  className="hover:bg-slate-50/70 transition-colors cursor-pointer"
                 >
                   {/* Task ID */}
                   <td className="py-4 px-6 text-sm font-semibold text-slate-900 whitespace-nowrap">
@@ -197,6 +200,9 @@ const TaskListView = ({ projectId }: TaskListViewProps) => {
                   <td className="py-4 px-6 text-right whitespace-nowrap">
                     <button
                       type="button"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                      }}
                       className="p-1 text-slate-400 hover:text-slate-600 rounded-md hover:bg-slate-100 transition-colors cursor-pointer inline-flex items-center justify-center"
                       aria-label="Settings"
                     >

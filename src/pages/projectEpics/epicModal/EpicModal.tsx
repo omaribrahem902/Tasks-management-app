@@ -8,6 +8,7 @@ import { useProjectMembers } from "../../../hooks/useProjectMembers";
 import EpicModalHeader from "./EpicModalHeader";
 import EpicInfo from "./EpicModalInfo";
 import EpicTasks from "./epicTasks/EpicTasks";
+import { TaskModalContainer } from "../../projectTasksPage/taskModal";
 
 export interface ModalProps {
   selectedEpicId: string;
@@ -58,6 +59,9 @@ const EpicModal = ({ selectedEpicId, isOpen, onClose }: ModalProps) => {
         <EpicInfo key={epic.epic_id} epic={epic} members={members} projectId={projectId} />
         
         <EpicTasks  />
+
+        {/* Task Details Popup */}
+        <TaskModalContainer />
       </div>
     </div>
   );

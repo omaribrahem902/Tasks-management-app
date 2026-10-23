@@ -1,8 +1,11 @@
+import { useParams } from "react-router-dom";
 import BoxName from "../../../../components/BoxName";
 import { formatDate } from "../../../../utils/formatDate";
+import { useSelectedTaskStore } from "../../../../stores/useProjectStore";
 
 export interface Task {
   id: string;
+  project_id: string;
   title: string;
   assignee: {
     name: string;
@@ -12,9 +15,30 @@ export interface Task {
 }
 
 const EpicTask = ({ task }: { task: Task }) => {
+  const { projectId: paramsProjectId } = useParams<{ projectId: string }>();
+ const setSelectedTask = useSelectedTaskStore((state) => state.setSelectedTask);
+
+  const finalProjectId = paramsProjectId || task.project_id;
+
+const handleClick = () => {
+    if (task.id && finalProjectId) {
+      setSelectedTask({
+        taskId: task.id,
+        projectId: finalProjectId,
+      });
+    } 
+  };
   return (
     <>
-      <li className="flex flex-row items-center  p-4">
+      <li onClick={handleClick}
+      role="button"
+      tabIndex={0}
+      onKeyDown={(e) => {
+        if (e.key === "Enter" || e.key === " ") {
+          e.preventDefault();
+          handleClick();
+        }
+      }} className="flex flex-row items-center  p-4">
         <div>
           <h2 className="text-[16px] mb-1">{task.title}</h2>
           <div className="flex items-center gap-1">

@@ -75,21 +75,19 @@ const ColumnView = ({
         </div>
       ) : hasTasks ? (
         tasks.map((task) => (
-          <TaskBoardView task={task} color={color} key={task.id} />
+          <TaskBoardView
+            task={task}
+            color={color}
+            projectId={projectId}
+            key={task.id}
+          />
         ))
       ) : (
-        <div className="hidden md:flex flex-col items-center justify-center gap-2 text-slate-500 uppercase border border-[#cbd5e1] border-dashed rounded-md p-6">
+        <div className="hidden md:flex flex-col items-center justify-center gap-2 text-slate-500 uppercase border border-[#cbd5e1] border-dashed rounded-md p-3">
           <CalendarX strokeWidth={1.5} size={30} />
            <p className="text-sm text-slate-400 mb-6">
-          There are no tasks for this project yet.
+          NO TASKS.
         </p>
-        <button
-          onClick={() => navigate(`/project/${projectId}/tasks/new`)}
-          className="btn inline-flex items-center gap-1.5 px-4 py-2 rounded-sm text-sm cursor-pointer"
-        >
-          <Plus size={16} />
-          <span>Add New Task</span>
-        </button>
         </div>
       )}
     </div>
