@@ -1,29 +1,56 @@
 import { getSession } from "../../utils/getSession";
 
-export const getProjectTasks = async (project_id: string, status?: string) => {
+type GetTasksByStatusParams = {
+  projectId: string;
+  stat?: string;
+  limit?: number;
+  offset?: number;
+};
+
+export const getProjectTasksByStatus = async ({
+  projectId,
+  stat,
+  limit,
+  offset = 0,
+}: GetTasksByStatusParams) => {
   const session = await getSession();
 
-  let url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/project_tasks?project_id=eq.${project_id}`;
-
-  if (status) {
-    // If status is passed with spaces, normalize to match the PostgreSQL enum
-    const formattedStatus = status.replace(/ /g, "_");
-    url += `&status=eq.${encodeURIComponent(formattedStatus)}`;
-  }
-
-  const res = await fetch(url, {
-    method: "GET",
-    headers: {
-      apikey: import.meta.env.VITE_SUPABASE_API_KEY,
-      Authorization: `Bearer ${session.access_token}`,
-      "Content-Type": "application/json",
-    },
+  const params = new URLSearchParams({
+    project_id: `eq.${projectId}`,
+    order: "created_at.desc",
   });
 
-  if (!res.ok) {
-    const error = await res.text();
-    throw new Error(error);
+  if (stat) {
+    params.set("status", `eq.${stat}`);
   }
 
-  return res.json();
+  if (limit !== undefined) {
+    params.set("limit", String(limit));
+    params.set("offset", String(offset));
+  }
+
+  const response = await fetch(
+    `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/project_tasks?${params.toString()}`,
+    {
+      headers: {
+        apikey: import.meta.env.VITE_SUPABASE_API_KEY,
+        Authorization: `Bearer ${session.access_token}`,
+        "Content-Type": "application/json",
+        Prefer: "count=exact",
+      },
+    }
+  );
+
+  if (!response.ok) {
+    throw new Error(await response.text());
+  }
+
+  const tasks = await response.json();
+  const contentRange = response.headers.get("content-range");
+  const totalCount = contentRange ? Number(contentRange.split("/")[1]) : 0;
+
+  return {
+    tasks,
+    totalCount,
+  };
 };

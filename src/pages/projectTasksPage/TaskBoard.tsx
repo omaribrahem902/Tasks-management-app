@@ -11,12 +11,24 @@ interface TaskBoardViewProps {
   projectId?: string;
 }
 
+const STATUS_MAP = {
+  TO_DO: "#3B82F6",
+  IN_PROGRESS: "#EAB308",
+  BLOCKED: "#EF4444",
+  IN_REVIEW: "#A855F7",
+  READY_FOR_QA: "#14B8A6",
+  REOPENED: "#F97316",
+  READY_FOR_PRODUCTION: "#EC4899",
+  DONE: "#22C55E",
+};
+
 const TaskBoardView = ({ task, color, projectId: propProjectId }: TaskBoardViewProps) => {
   const { projectId: paramsProjectId } = useParams<{ projectId: string }>();
   const setSelectedTask = useSelectedTaskStore((state) => state.setSelectedTask);
 
   const finalProjectId = propProjectId || paramsProjectId || task.project_id;
   const assigneeName =  task.assignee.name || "";
+  const statusColor = color || STATUS_MAP[task.status];
 
   const handleClick = () => {
     if (task.id && finalProjectId) {
@@ -38,8 +50,8 @@ const TaskBoardView = ({ task, color, projectId: propProjectId }: TaskBoardViewP
           handleClick();
         }
       }}
-      className="flex w-full md:w-[288px] flex-col gap-4 rounded-md border-l-4 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer hover:border-slate-300"
-      style={{ borderLeftColor: color ?? "#CBD5E1" }}
+      className="flex w-full h-[107px] md:w-[288px] flex-col gap-4 rounded-md border-l-4 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer hover:border-slate-300"
+      style={{ borderLeftColor: statusColor }}
     >
       <div className="flex justify-between items-center gap-2">
         <h3
@@ -50,7 +62,7 @@ const TaskBoardView = ({ task, color, projectId: propProjectId }: TaskBoardViewP
           {task.title}
         </h3>
         <span
-          style={{ backgroundColor: color }}
+          style={{ backgroundColor: statusColor }}
           className="text-white px-2 py-0.5 text-[10px] rounded-sm shrink-0 font-medium"
         >
           {task.status}

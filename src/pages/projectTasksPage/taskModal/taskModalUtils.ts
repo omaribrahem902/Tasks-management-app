@@ -24,7 +24,7 @@ export const getStatusConfig = (status?: string | null): StatusConfig => {
       textColor: "text-slate-600",
       bgColor: "bg-slate-100",
       borderColor: "border-slate-200",
-      dotColor: "#64748B",
+      dotColor: "#3B82F6",
     };
   }
 
@@ -35,18 +35,18 @@ export const getStatusConfig = (status?: string | null): StatusConfig => {
     case "to_do":
       return {
         label: "Todo",
-        textColor: "text-slate-700",
-        bgColor: "bg-slate-100",
-        borderColor: "border-slate-200",
-        dotColor: "#64748B",
+        textColor: "text-blue-700",
+        bgColor: "bg-blue-50",
+        borderColor: "border-blue-200",
+        dotColor: "#3B82F6",
       };
     case "in_progress":
       return {
         label: "In Progress",
-        textColor: "text-blue-700",
-        bgColor: "bg-blue-50",
-        borderColor: "border-blue-200",
-        dotColor: "#2563EB",
+        textColor: "text-yellow-700",
+        bgColor: "bg-yellow-50",
+        borderColor: "border-yellow-200",
+        dotColor: "#EAB308",
       };
     case "blocked":
       return {
@@ -54,7 +54,7 @@ export const getStatusConfig = (status?: string | null): StatusConfig => {
         textColor: "text-red-700",
         bgColor: "bg-red-50",
         borderColor: "border-red-200",
-        dotColor: "#DC2626",
+        dotColor: "#EF4444",
       };
     case "in_review":
       return {
@@ -112,62 +112,6 @@ export const getStatusConfig = (status?: string | null): StatusConfig => {
   }
 };
 
-/**
- * Maps priority API values to display label and badge styling.
- */
-export const getPriorityConfig = (priority?: string | null): PriorityConfig => {
-  if (!priority) {
-    return {
-      label: "Normal",
-      textColor: "text-slate-600",
-      bgColor: "bg-slate-100",
-      borderColor: "border-slate-200",
-      dotColor: "#64748B",
-    };
-  }
-
-  const key = priority.toLowerCase().trim().replace(/[-\s]+/g, "_");
-
-  switch (key) {
-    case "high":
-    case "urgent":
-      return {
-        label: "High",
-        textColor: "text-red-700",
-        bgColor: "bg-red-50",
-        borderColor: "border-red-200",
-        dotColor: "#DC2626",
-      };
-    case "medium":
-      return {
-        label: "Medium",
-        textColor: "text-amber-700",
-        bgColor: "bg-amber-50",
-        borderColor: "border-amber-200",
-        dotColor: "#D97706",
-      };
-    case "low":
-      return {
-        label: "Low",
-        textColor: "text-emerald-700",
-        bgColor: "bg-emerald-50",
-        borderColor: "border-emerald-200",
-        dotColor: "#16A34A",
-      };
-    default: {
-      const words = key
-        .split("_")
-        .map((w) => w.charAt(0).toUpperCase() + w.slice(1));
-      return {
-        label: words.join(" ") || priority,
-        textColor: "text-slate-700",
-        bgColor: "bg-slate-100",
-        borderColor: "border-slate-200",
-        dotColor: "#64748B",
-      };
-    }
-  }
-};
 
 /**
  * Formats a date string into "Oct 15, 2025" using UTC timezone.

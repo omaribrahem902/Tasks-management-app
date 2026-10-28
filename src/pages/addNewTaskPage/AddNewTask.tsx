@@ -16,6 +16,7 @@ import Breadcrumb from "../../components/BreadCrumbs";
 import { addNewTaskAPI } from "./addNewTaskAPI";
 import { useProjectMembers } from "../../hooks/useProjectMembers";
 import { useSelectedEpicStore } from "../../stores/useProjectStore";
+import { useSelectedStatusStore } from "./useTasksStore";
 
 interface TaskFormValues {
   epic_id?: string;
@@ -41,7 +42,7 @@ const AddNewTask = () => {
   const queryClient = useQueryClient();
   const selectedEpic = useSelectedEpicStore((state) => state.selectedEpic);
   console.log("selectedEpic", selectedEpic);
-
+  const {selectedStatus} = useSelectedStatusStore();
   const {
     data: members,
     isLoading: membersLoading,
@@ -190,7 +191,7 @@ const AddNewTask = () => {
             schema={taskSchema}
             defaultValues={{
               title: "",
-              status: "TO_DO",
+              status: selectedStatus.status || "",
               assignee_id: "",
               epic_id: selectedEpic?.id || "",
               due_date: "",

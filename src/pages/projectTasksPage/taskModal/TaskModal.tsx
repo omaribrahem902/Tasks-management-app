@@ -15,7 +15,6 @@ import TaskModalSkeleton from "./TaskModalSkeleton";
 import { getTaskDetails, type ProjectTaskDetail } from "./taskModalAPI";
 import {
   formatTaskDate,
-  getPriorityConfig,
   getStatusConfig,
 } from "./taskModalUtils";
 
@@ -122,7 +121,6 @@ const TaskModal = ({
     null;
 
   const statusConfig = getStatusConfig(task?.status);
-  const priorityConfig = getPriorityConfig(task?.priority);
 
   return (
     <div
@@ -227,17 +225,6 @@ const TaskModal = ({
                   {statusConfig.label}
                 </span>
 
-                {/* Priority Badge */}
-                <span
-                  className={`inline-flex items-center gap-1.5 rounded-full px-2.5 py-1 text-xs font-semibold border ${priorityConfig.bgColor} ${priorityConfig.textColor} ${priorityConfig.borderColor}`}
-                >
-                  <span
-                    className="h-1.5 w-1.5 rounded-full"
-                    style={{ backgroundColor: priorityConfig.dotColor }}
-                  />
-                  Priority: {priorityConfig.label}
-                </span>
-
                 {/* Related Epic Badge (if applicable) */}
                 {epicIdentifier && (
                   <span className="inline-flex items-center gap-1 rounded-full bg-[#E0E8FF] px-2.5 py-1 text-xs font-semibold text-[#003D9B]">
@@ -318,22 +305,6 @@ const TaskModal = ({
                   />
                   <span className="text-sm font-medium text-slate-800">
                     {statusConfig.label}
-                  </span>
-                </div>
-              </div>
-
-              {/* Priority */}
-              <div className="flex flex-col rounded-lg border border-slate-200/80 p-3 bg-white">
-                <span className="text-[10px] font-bold uppercase tracking-wider text-[#737685] mb-2">
-                  Priority
-                </span>
-                <div className="flex items-center gap-1.5">
-                  <span
-                    className="h-2 w-2 rounded-full"
-                    style={{ backgroundColor: priorityConfig.dotColor }}
-                  />
-                  <span className="text-sm font-medium text-slate-800">
-                    {priorityConfig.label}
                   </span>
                 </div>
               </div>

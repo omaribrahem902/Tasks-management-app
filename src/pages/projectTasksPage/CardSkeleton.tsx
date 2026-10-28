@@ -1,6 +1,6 @@
 const CardSkeleton = () => {
   return (
-    <div className="flex flex-col gap-6 w-full rounded-xl border border-gray-100 border-l-4 border-l-gray-200 bg-white p-4 shadow-sm">
+    <div className="flex flex-col gap-4 h-[107px] w-full rounded-xl border border-gray-100 border-l-4 border-l-gray-200 bg-white p-4 shadow-sm">
 
         {/* Name */}
         <div className="h-5 w-24 animate-pulse rounded-md bg-gray-200" />
