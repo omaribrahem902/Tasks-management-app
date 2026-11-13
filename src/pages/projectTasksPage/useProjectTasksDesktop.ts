@@ -7,16 +7,21 @@ export const useProjectTasksDesktop = (
   projectId: string | undefined,
   page: number,
   stat?: string,
+  search?: string,
 ) => {
-  return useQuery({
-    queryKey: ["projectTasks", projectId, page,stat],
+  const trimmedSearch = search?.trim() || "";
 
-    queryFn: () =>
+  return useQuery({
+    queryKey: ["projectTasks", "desktop", projectId, page, stat, trimmedSearch],
+
+    queryFn: ({ signal }) =>
       getProjectTasksByStatus({
         projectId: projectId as string,
         limit: LIMIT,
         offset: (page - 1) * LIMIT,
-        stat: stat,
+        stat,
+        title: trimmedSearch,
+        signal,
       }),
 
     enabled: !!projectId,

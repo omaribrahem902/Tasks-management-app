@@ -1,5 +1,5 @@
 import { CalendarX, Plus } from "lucide-react";
-import { useEffect, useMemo, useRef } from "react";
+import { useCallback, useEffect, useMemo, useRef } from "react";
 import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
 import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
@@ -10,7 +10,6 @@ import { getProjectTasksByStatus } from "./getProjectTasksAPI";
 import { updateTaskStatusAPI } from "./updateTaskStatusAPI";
 import type { Task } from "../projectEpics/epicModal/epicTasks/EpicTask";
 import { useSelectedStatusStore } from "../addNewTaskPage/useTasksStore";
-import toast from "react-hot-toast";
 
 const PAGE_SIZE = 6;
 
@@ -19,11 +18,22 @@ interface ColumnViewProps {
   status?: string;
   title?: string;
   color?: string;
+  searchTerm?: string;
 }
 
 type BoardPage = { tasks: Task[]; totalCount: number };
+type InfiniteTasksData = {
+  pages: BoardPage[];
+  pageParams: number[];
+};
 
-const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
+const ColumnView = ({
+  projectId,
+  status,
+  title,
+  color,
+  searchTerm = "",
+}: ColumnViewProps) => {
   const navigate = useNavigate();
   const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
@@ -31,7 +41,14 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
   const columnRef = useRef<HTMLDivElement>(null);
   const { setSelectedStatus } = useSelectedStatusStore();
 
-  const queryKey = ["projectTasks", "board", projectId, status] as const;
+  const trimmedSearch = searchTerm.trim();
+  const queryKey = [
+    "projectTasks",
+    "board",
+    projectId,
+    status,
+    trimmedSearch,
+  ] as const;
 
   const {
     data,
@@ -43,12 +60,14 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
     refetch,
   } = useInfiniteQuery({
     queryKey,
-    queryFn: ({ pageParam }) =>
+    queryFn: ({ pageParam, signal }) =>
       getProjectTasksByStatus({
         projectId: projectId as string,
         stat: status as string,
+        title: trimmedSearch,
         limit: PAGE_SIZE,
         offset: pageParam,
+        signal,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -73,76 +92,87 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
     return Array.from(map.values());
   }, [data]);
 
-  const totalCount = data?.pages?.[0]?.totalCount ?? tasks.length;
+  const totalCount = data?.pages?.[0]?.totalCount ?? 0;
   const hasTasks = tasks.length > 0;
 
   // ---- Optimistic move between columns ----
-  const moveTaskOptimistically = async (
-    task: Task,
-    fromStatus: string,
-    toStatus: string,
-  ) => {
-    if (!projectId || fromStatus === toStatus) return;
+  const moveTaskOptimistically = useCallback(
+    async (task: Task, fromStatus: string, toStatus: string) => {
+      if (!projectId || fromStatus === toStatus) return;
 
-    const fromKey = ["projectTasks", "board", projectId, fromStatus];
-    const toKey = ["projectTasks", "board", projectId, toStatus];
+      const fromKey = [
+        "projectTasks",
+        "board",
+        projectId,
+        fromStatus,
+        trimmedSearch,
+      ];
+      const toKey = [
+        "projectTasks",
+        "board",
+        projectId,
+        toStatus,
+        trimmedSearch,
+      ];
 
-    // snapshot للـ rollback
-    const previousFrom = queryClient.getQueryData(fromKey);
-    const previousTo = queryClient.getQueryData(toKey);
+      // Snapshot for rollback
+      const previousFrom = queryClient.getQueryData(fromKey);
+      const previousTo = queryClient.getQueryData(toKey);
 
-    const updatedTask: Task = { ...task, status: toStatus };
+      const updatedTask: Task = { ...task, status: toStatus };
 
-    // شيل من العمود القديم
-    queryClient.setQueryData(fromKey, (old: any) => {
-      if (!old?.pages) return old;
-      return {
-        ...old,
-        pages: old.pages.map((page: BoardPage) => ({
-          ...page,
-          tasks: page.tasks.filter((t) => t.id !== task.id),
-          totalCount: Math.max(0, (page.totalCount ?? 1) - 1),
-        })),
-      };
-    });
-
-    // ضيف في العمود الجديد (أول صفحة)
-    queryClient.setQueryData(toKey, (old: any) => {
-      if (!old?.pages?.length) {
+      // Remove from old column
+      queryClient.setQueryData<InfiniteTasksData>(fromKey, (old) => {
+        if (!old?.pages) return old;
         return {
-          pages: [{ tasks: [updatedTask], totalCount: 1 }],
-          pageParams: [0],
+          ...old,
+          pages: old.pages.map((page: BoardPage) => ({
+            ...page,
+            tasks: page.tasks.filter((t) => t.id !== task.id),
+            totalCount: Math.max(0, (page.totalCount ?? 1) - 1),
+          })),
         };
-      }
-      return {
-        ...old,
-        pages: old.pages.map((page: BoardPage, index: number) =>
-          index === 0
-            ? {
-                ...page,
-                tasks: [
-                  updatedTask,
-                  ...page.tasks.filter((t) => t.id !== task.id),
-                ],
-                totalCount: (page.totalCount ?? page.tasks.length) + 1,
-              }
-            : page,
-        ),
-      };
-    });
-
-    try {
-      await updateTaskStatusAPI(task.id, toStatus);
-      // اختياري: invalidate للموبايل list
-      queryClient.invalidateQueries({
-        queryKey: ["projectTasks", "mobile", projectId],
       });
-    } catch (err) {
-      // Rollback
-      queryClient.setQueryData(fromKey, previousFrom);
-      queryClient.setQueryData(toKey, previousTo);
-    }
-  };
+
+      // Add to new column (first page)
+      queryClient.setQueryData<InfiniteTasksData>(toKey, (old) => {
+        if (!old?.pages?.length) {
+          return {
+            pages: [{ tasks: [updatedTask], totalCount: 1 }],
+            pageParams: [0],
+          };
+        }
+        return {
+          ...old,
+          pages: old.pages.map((page: BoardPage, index: number) =>
+            index === 0
+              ? {
+                  ...page,
+                  tasks: [
+                    updatedTask,
+                    ...page.tasks.filter((t) => t.id !== task.id),
+                  ],
+                  totalCount: (page.totalCount ?? page.tasks.length) + 1,
+                }
+              : page,
+          ),
+        };
+      });
+
+      try {
+        await updateTaskStatusAPI(task.id, toStatus);
+        queryClient.invalidateQueries({
+          queryKey: ["projectTasks"],
+          exact: false,
+        });
+      } catch {
+        // Rollback
+        queryClient.setQueryData(fromKey, previousFrom);
+        queryClient.setQueryData(toKey, previousTo);
+      }
+    },
+    [projectId, queryClient, trimmedSearch],
+  );
 
   // ---- Drop target ----
   useEffect(() => {
@@ -164,7 +194,7 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
         }
       },
     });
-  }, [status, projectId, queryClient]);
+  }, [status, moveTaskOptimistically]);
 
   // ---- Infinite scroll ----
   useEffect(() => {

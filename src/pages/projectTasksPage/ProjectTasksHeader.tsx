@@ -3,7 +3,15 @@ import { useNavigate, useParams, useSearchParams } from "react-router-dom";
 import Breadcrumb from "../../components/BreadCrumbs";
 import SearchBar from "../../components/SearchBar";
 
-const ProjectTasksHeader = () => {
+interface ProjectTasksHeaderProps {
+  searchTerm?: string;
+  onSearchChange?: (value: string) => void;
+}
+
+const ProjectTasksHeader = ({
+  searchTerm = "",
+  onSearchChange,
+}: ProjectTasksHeaderProps) => {
   const { projectId } = useParams<{ projectId: string }>();
   const [searchParams] = useSearchParams();
   const navigate = useNavigate();
@@ -47,7 +55,11 @@ const ProjectTasksHeader = () => {
           </div>
 
           <div className="flex flex-col sm:flex-row items-stretch sm:items-center gap-3">
-            <SearchBar />
+            <SearchBar
+              value={searchTerm}
+              onChange={onSearchChange}
+              placeholder="Search tasks..."
+            />
 
             {/* View Switcher Select (Desktop only) */}
             <div className="relative min-w-[135px] hidden md:block">

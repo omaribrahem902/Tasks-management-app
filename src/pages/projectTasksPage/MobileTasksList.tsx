@@ -9,11 +9,16 @@ const PAGE_SIZE = 6;
 
 interface MobileTasksListProps {
   projectId: string;
+  searchTerm?: string;
 }
 
-const MobileTasksList = ({ projectId }: MobileTasksListProps) => {
+const MobileTasksList = ({
+  projectId,
+  searchTerm = "",
+}: MobileTasksListProps) => {
   const scrollRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
+  const trimmedSearch = searchTerm.trim();
 
   const {
     data,
@@ -24,12 +29,14 @@ const MobileTasksList = ({ projectId }: MobileTasksListProps) => {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["projectTasks", "mobile", projectId],
-    queryFn: ({ pageParam }) =>
+    queryKey: ["projectTasks", "mobile", projectId, trimmedSearch],
+    queryFn: ({ pageParam, signal }) =>
       getProjectTasksByStatus({
         projectId,
+        title: trimmedSearch,
         limit: PAGE_SIZE,
         offset: pageParam,
+        signal,
       }),
     initialPageParam: 0,
     getNextPageParam: (lastPage, allPages) => {
@@ -94,6 +101,13 @@ const MobileTasksList = ({ projectId }: MobileTasksListProps) => {
   }
 
   if (tasks.length === 0) {
+    if (trimmedSearch) {
+      return (
+        <p className="p-6 text-center text-sm text-slate-400 md:hidden">
+          No tasks found matching your search.
+        </p>
+      );
+    }
     return (
       <p className="p-6 text-center text-sm text-slate-400 md:hidden">
         No tasks.

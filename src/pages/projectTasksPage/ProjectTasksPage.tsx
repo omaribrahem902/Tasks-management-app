@@ -1,9 +1,11 @@
+import { useState } from "react";
 import { useParams, useSearchParams } from "react-router-dom";
 import ColumnView from "./ColumnView";
 import ProjectTasksHeader from "./ProjectTasksHeader";
 import TaskListView from "./tasksListView/TaskListView";
 import MobileTasksList from "./MobileTasksList";
 import { TaskModalContainer } from "./taskModal";
+import { useDebounce } from "../../hooks/useDebounce";
 
 const STATUSES = [
   { key: "TO_DO", label: "To Do", color: "#3B82F6" },
@@ -21,26 +23,52 @@ const ProjectTasks = () => {
   const [searchParams] = useSearchParams();
   const isListView = searchParams.get("view") === "list";
 
+  const [searchTerm, setSearchTerm] = useState("");
+  const [prevProjectId, setPrevProjectId] = useState(projectId);
+
+  if (prevProjectId !== projectId) {
+    setPrevProjectId(projectId);
+    setSearchTerm("");
+  }
+
+  const debouncedSearchTerm = useDebounce(searchTerm, 400);
+
   return (
     <>
-      <ProjectTasksHeader />
+      <ProjectTasksHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
 
       {isListView ? (
         <>
           {/* Desktop List */}
           <div className="mb-10 hidden md:block">
-            <TaskListView projectId={projectId as string} />
+            <TaskListView
+              projectId={projectId as string}
+              searchTerm={debouncedSearchTerm}
+            />
           </div>
 
-          {/* Mobile List → قائمة واحدة من كل الـ tasks */}
-          {projectId && <MobileTasksList projectId={projectId} />}
+          {/* Mobile List */}
+          {projectId && (
+            <MobileTasksList
+              projectId={projectId}
+              searchTerm={debouncedSearchTerm}
+            />
+          )}
         </>
       ) : (
         <>
-          {/* Mobile Board → قائمة واحدة (6 من الكل، من غير columns) */}
-          {projectId && <MobileTasksList projectId={projectId} />}
+          {/* Mobile Board */}
+          {projectId && (
+            <MobileTasksList
+              projectId={projectId}
+              searchTerm={debouncedSearchTerm}
+            />
+          )}
 
-          {/* Desktop Board → أعمدة حسب الـ status */}
+          {/* Desktop Board */}
           <section className="custom-scrollbar mb-0 hidden max-h-[470px] max-w-full flex-1 gap-6 overflow-x-auto overflow-y-auto pb-2 md:flex">
             {STATUSES.map((status) => (
               <ColumnView
@@ -49,6 +77,7 @@ const ProjectTasks = () => {
                 status={status.key}
                 title={status.label}
                 color={status.color}
+                searchTerm={debouncedSearchTerm}
               />
             ))}
           </section>

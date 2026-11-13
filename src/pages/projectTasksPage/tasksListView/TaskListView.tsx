@@ -8,13 +8,20 @@ import { ErrorPage } from "./ErrorPage";
 import { EmptyPage } from "./EmptyPage";
 import TasksTable from "./TasksTable";
 
-
 interface TaskListViewProps {
   projectId: string;
+  searchTerm?: string;
 }
 
-const TaskListView = ({ projectId }: TaskListViewProps) => {
+const TaskListView = ({ projectId, searchTerm = "" }: TaskListViewProps) => {
   const [page, setPage] = useState(1);
+  const [prevSearch, setPrevSearch] = useState(searchTerm);
+
+  if (prevSearch !== searchTerm) {
+    setPrevSearch(searchTerm);
+    setPage(1);
+  }
+
   const setSelectedTask = useSelectedTaskStore(
     (state) => state.setSelectedTask,
   );
@@ -22,6 +29,8 @@ const TaskListView = ({ projectId }: TaskListViewProps) => {
   const { data, isLoading, isError, refetch } = useProjectTasksDesktop(
     projectId,
     page,
+    undefined,
+    searchTerm,
   );
 
   const tasks: ProjectTaskItem[] = Array.isArray(data)
@@ -29,7 +38,6 @@ const TaskListView = ({ projectId }: TaskListViewProps) => {
     : (data?.tasks ?? []);
 
   const totalCount = data?.totalCount ?? 0;
-
   const totalPages = Math.ceil(totalCount / LIMIT);
 
   if (isLoading) {
@@ -37,14 +45,15 @@ const TaskListView = ({ projectId }: TaskListViewProps) => {
   }
 
   if (isError) {
-    return (
-      <ErrorPage refetch={refetch} />
-    )
+    return <ErrorPage refetch={refetch} />;
   }
 
   if (tasks.length === 0) {
     return (
-      <EmptyPage projectId={projectId} />
+      <EmptyPage
+        projectId={projectId}
+        isSearchActive={Boolean(searchTerm.trim())}
+      />
     );
   }
 
@@ -61,7 +70,7 @@ const TaskListView = ({ projectId }: TaskListViewProps) => {
         <span className="text-sm text-slate-500">
           Showing{" "}
           <span className="font-medium text-slate-700">{tasks.length}</span> of{" "}
-          <span className="font-medium text-slate-700">{data?.totalCount}</span>{" "}
+          <span className="font-medium text-slate-700">{totalCount}</span>{" "}
           results
         </span>
         <Pagination

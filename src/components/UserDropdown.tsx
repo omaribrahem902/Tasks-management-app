@@ -1,8 +1,13 @@
 import { useState } from "react";
 import { LogOut, ChevronDown } from "lucide-react";
+import { useMutation } from "@tanstack/react-query";
+import { logoutAPI } from "../auth/logout/logout";
 
 const UserMenu = () => {
   const [open, setOpen] = useState(false);
+  const logoutMutation = useMutation({
+    mutationFn: logoutAPI,
+  });
 
   return (
     <div className="relative">
