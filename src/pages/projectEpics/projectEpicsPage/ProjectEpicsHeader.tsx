@@ -4,7 +4,15 @@ import { useNavigate, useParams } from "react-router-dom";
 import Breadcrumb from "../../../components/BreadCrumbs";
 import SearchBar from "../../../components/SearchBar";
 
-const ProjectEpicsHeader = () => {
+interface ProjectEpicsHeaderProps {
+  searchTerm?: string;
+  onSearchChange?: (value: string) => void;
+}
+
+const ProjectEpicsHeader = ({
+  searchTerm = "",
+  onSearchChange,
+}: ProjectEpicsHeaderProps) => {
   const { projectId } = useParams<{ projectId: string }>();
   const navigate = useNavigate();
 
@@ -18,14 +26,19 @@ const ProjectEpicsHeader = () => {
             Project Epics
           </h1>
 
-          <SearchBar margin_right={52} />
+          <SearchBar
+            value={searchTerm}
+            onChange={onSearchChange}
+            placeholder="Search epics..."
+            margin_right={52}
+          />
         </div>
 
         <button
           onClick={() =>
             navigate(`/project/${projectId}/epics/new`)
           }
-          className="btn fixed bottom-24 right-8 flex h-10 w-fit items-center justify-center gap-1.5 rounded-lg px-4.5 py-7 md:absolute md:right-4 md:-top-1 md:h-12 md:rounded-none md:p-4 md:px-6 md:py-3"
+          className="btn fixed bottom-24 right-8 flex h-10 w-fit items-center justify-center gap-1.5 rounded-lg px-4.5 py-7 md:absolute md:right-4 md:-top-1 md:h-12 md:rounded-none md:p-4 md:px-6 md:py-3 cursor-pointer"
         >
           <Plus color="#fff" size={20} />
 

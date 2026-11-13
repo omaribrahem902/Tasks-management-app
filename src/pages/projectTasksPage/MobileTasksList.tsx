@@ -110,7 +110,6 @@ const MobileTasksList = ({ projectId }: MobileTasksListProps) => {
         <TaskBoardView
           key={task.id}
           task={task}
-          color={task.status} // أو map حسب task.status
           projectId={projectId}
         />
       ))}

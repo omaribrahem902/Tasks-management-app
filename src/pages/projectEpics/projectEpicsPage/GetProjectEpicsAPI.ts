@@ -4,12 +4,16 @@ type GetEpicsParams = {
   projectId: string;
   limit?: number;
   offset?: number;
+  search?: string;
+  signal?: AbortSignal;
 };
 
 export const getEpicsAPI = async ({
   projectId,
   limit,
   offset = 0,
+  search,
+  signal,
 }: GetEpicsParams) => {
   const session = await getSession();
 
@@ -17,6 +21,10 @@ export const getEpicsAPI = async ({
     project_id: `eq.${projectId}`,
     order: "created_at.desc",
   });
+
+  if (search && search.trim()) {
+    params.set("title", `ilike.%${search.trim()}%`);
+  }
 
   if (limit !== undefined) {
     params.set("limit", String(limit));
@@ -32,6 +40,7 @@ export const getEpicsAPI = async ({
         "Content-Type": "application/json",
         Prefer: "count=exact",
       },
+      signal,
     },
   );
 
@@ -41,7 +50,8 @@ export const getEpicsAPI = async ({
 
   const epics = await response.json();
   const contentRange = response.headers.get("content-range");
-  const totalCount = contentRange ? Number(contentRange.split("/")[1]) : 0;
+  const parsedTotal = contentRange ? Number(contentRange.split("/")[1]) : NaN;
+  const totalCount = Number.isNaN(parsedTotal) ? 0 : parsedTotal;
 
   return {
     epics,

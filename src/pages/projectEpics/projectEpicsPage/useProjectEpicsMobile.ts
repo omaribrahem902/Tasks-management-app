@@ -4,18 +4,21 @@ import { LIMIT } from "./useProjectEpicsDesktop";
 
 export const useProjectEpicsMobile = (
   projectId: string | undefined,
+  search?: string,
 ) => {
-  return useInfiniteQuery({
-    queryKey: ["projectEpics", projectId, "infinite"],
+  const trimmedSearch = search?.trim() || "";
 
-    queryFn: ({ pageParam }) =>
-      getEpicsAPI(
-        {
-          projectId: projectId as string,
-          limit: LIMIT,
-          offset: (pageParam - 1) * LIMIT,
-        }
-      ),
+  return useInfiniteQuery({
+    queryKey: ["projectEpics", projectId, "infinite", trimmedSearch],
+
+    queryFn: ({ pageParam, signal }) =>
+      getEpicsAPI({
+        projectId: projectId as string,
+        limit: LIMIT,
+        offset: (pageParam - 1) * LIMIT,
+        search: trimmedSearch,
+        signal,
+      }),
 
     initialPageParam: 1,
 

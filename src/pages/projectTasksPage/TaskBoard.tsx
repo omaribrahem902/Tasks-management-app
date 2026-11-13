@@ -1,5 +1,8 @@
 import { Calendar, CircleCheck } from "lucide-react";
+import { useEffect, useRef, useState } from "react";
 import { useParams } from "react-router-dom";
+import { draggable } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+
 import BoxName from "../../components/BoxName";
 import type { Task } from "../projectEpics/epicModal/epicTasks/EpicTask";
 import { formatDate } from "../../utils/formatDate";
@@ -11,7 +14,7 @@ interface TaskBoardViewProps {
   projectId?: string;
 }
 
-const STATUS_MAP = {
+const STATUS_MAP: Record<string, string> = {
   TO_DO: "#3B82F6",
   IN_PROGRESS: "#EAB308",
   BLOCKED: "#EF4444",
@@ -22,25 +25,48 @@ const STATUS_MAP = {
   DONE: "#22C55E",
 };
 
-const TaskBoardView = ({ task, color, projectId: propProjectId }: TaskBoardViewProps) => {
+const TaskBoardView = ({
+  task,
+  color,
+  projectId: propProjectId,
+}: TaskBoardViewProps) => {
+  const ref = useRef<HTMLDivElement>(null);
+  const [isDragging, setIsDragging] = useState(false);
   const { projectId: paramsProjectId } = useParams<{ projectId: string }>();
-  const setSelectedTask = useSelectedTaskStore((state) => state.setSelectedTask);
+  const setSelectedTask = useSelectedTaskStore((s) => s.setSelectedTask);
 
   const finalProjectId = propProjectId || paramsProjectId || task.project_id;
-  const assigneeName =  task.assignee.name || "";
-  const statusColor = color || STATUS_MAP[task.status];
+  const assigneeName = task.assignee?.name || "";
+  const statusColor = color || STATUS_MAP[task.status] || "#CBD5E1";
+
+  // Register as draggable
+  useEffect(() => {
+    const el = ref.current;
+    if (!el) return;
+
+    return draggable({
+      element: el,
+      getInitialData: () => ({
+        type: "task",
+        taskId: task.id,
+        fromStatus: task.status,
+        task,
+      }),
+      onDragStart: () => setIsDragging(true),
+      onDrop: () => setIsDragging(false),
+    });
+  }, [task]);
 
   const handleClick = () => {
+    if (isDragging) return; // منع فتح المودال أثناء السحب
     if (task.id && finalProjectId) {
-      setSelectedTask({
-        taskId: task.id,
-        projectId: finalProjectId,
-      });
+      setSelectedTask({ taskId: task.id, projectId: finalProjectId });
     }
   };
 
   return (
     <div
+      ref={ref}
       onClick={handleClick}
       role="button"
       tabIndex={0}
@@ -50,30 +76,35 @@ const TaskBoardView = ({ task, color, projectId: propProjectId }: TaskBoardViewP
           handleClick();
         }
       }}
-      className="flex w-full h-[107px] md:w-[288px] flex-col gap-4 rounded-md border-l-4 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md cursor-pointer hover:border-slate-300"
+      className={`flex h-[107px] w-full flex-col gap-4 rounded-md border-l-4 bg-white p-4 shadow-sm transition-all duration-200 hover:shadow-md cursor-grab active:cursor-grabbing md:w-[288px] ${
+        isDragging ? "opacity-40" : ""
+      }`}
       style={{ borderLeftColor: statusColor }}
     >
-      <div className="flex justify-between items-center gap-2">
+      <div className="flex items-center justify-between gap-2">
         <h3
-          className={`font-medium text-slate-800 line-clamp-2 ${
-            task.status === "DONE" ? "line-through text-slate-400" : ""
+          className={`line-clamp-2 font-medium text-slate-800 ${
+            task.status === "DONE" ? "text-slate-400 line-through" : ""
           }`}
         >
           {task.title}
         </h3>
         <span
           style={{ backgroundColor: statusColor }}
-          className="text-white px-2 py-0.5 text-[10px] rounded-sm shrink-0 font-medium"
+          className="shrink-0 rounded-sm px-2 py-0.5 text-[10px] font-medium text-white"
         >
           {task.status}
         </span>
       </div>
+
       <div className="flex items-center justify-between text-sm text-slate-500">
         <span className="flex items-center gap-1 capitalize">
           {task.status === "DONE" ? (
             <>
               <CircleCheck strokeWidth={1.5} size={14} color="#004E32" />
-              <span className="uppercase text-[#004E32] text-xs font-semibold">Completed</span>
+              <span className="text-xs font-semibold uppercase text-[#004E32]">
+                Completed
+              </span>
             </>
           ) : (
             <>
@@ -84,8 +115,8 @@ const TaskBoardView = ({ task, color, projectId: propProjectId }: TaskBoardViewP
         </span>
         {assigneeName ? (
           <BoxName size={8} name={assigneeName} fontTheme="text-[10px]" />
-        ) : (   
-          <span className="text-xs text-slate-400 italic">Unassigned</span>
+        ) : (
+          <span className="text-xs italic text-slate-400">Unassigned</span>
         )}
       </div>
     </div>

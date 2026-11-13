@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@atlaskit/pragmatic-drag-and-drop": "^4.0.0",
+    "@atlaskit/pragmatic-drag-and-drop-hitbox": "^3.0.0",
+    "@atlaskit/pragmatic-drag-and-drop-react-drop-indicator": "^4.3.0",
     "@fontsource-variable/geist": "^5.2.9",
     "@hookform/resolvers": "^5.2.2",
     "@reduxjs/toolkit": "^2.12.0",

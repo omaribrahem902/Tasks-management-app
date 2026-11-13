@@ -1,12 +1,17 @@
 import { CalendarX, Plus } from "lucide-react";
 import { useEffect, useMemo, useRef } from "react";
-import { useInfiniteQuery } from "@tanstack/react-query";
+import { useInfiniteQuery, useQueryClient } from "@tanstack/react-query";
 import { useNavigate } from "react-router-dom";
+import { dropTargetForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+
 import TaskBoardView from "./TaskBoard";
 import CardSkeleton from "./CardSkeleton";
 import { getProjectTasksByStatus } from "./getProjectTasksAPI";
+import { updateTaskStatusAPI } from "./updateTaskStatusAPI";
 import type { Task } from "../projectEpics/epicModal/epicTasks/EpicTask";
 import { useSelectedStatusStore } from "../addNewTaskPage/useTasksStore";
+import toast from "react-hot-toast";
+
 const PAGE_SIZE = 6;
 
 interface ColumnViewProps {
@@ -16,11 +21,18 @@ interface ColumnViewProps {
   color?: string;
 }
 
+type BoardPage = { tasks: Task[]; totalCount: number };
+
 const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
   const navigate = useNavigate();
+  const queryClient = useQueryClient();
   const scrollRef = useRef<HTMLDivElement>(null);
   const loadMoreRef = useRef<HTMLDivElement>(null);
-  const { setSelectedStatus} = useSelectedStatusStore();
+  const columnRef = useRef<HTMLDivElement>(null);
+  const { setSelectedStatus } = useSelectedStatusStore();
+
+  const queryKey = ["projectTasks", "board", projectId, status] as const;
+
   const {
     data,
     isLoading,
@@ -30,7 +42,7 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
     fetchNextPage,
     refetch,
   } = useInfiniteQuery({
-    queryKey: ["projectTasks", "board", projectId, status],
+    queryKey,
     queryFn: ({ pageParam }) =>
       getProjectTasksByStatus({
         projectId: projectId as string,
@@ -44,9 +56,7 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
         (sum, page) => sum + (page.tasks?.length ?? 0),
         0,
       );
-      if (loaded < (lastPage.totalCount ?? 0)) {
-        return loaded;
-      }
+      if (loaded < (lastPage.totalCount ?? 0)) return loaded;
       return undefined;
     },
     enabled: Boolean(projectId && status),
@@ -54,13 +64,10 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
 
   const tasks: Task[] = useMemo(() => {
     if (!data?.pages) return [];
-
     const map = new Map<string, Task>();
     data.pages.forEach((page) => {
       page.tasks?.forEach((task: Task) => {
-        if (task.id && !map.has(task.id)) {
-          map.set(task.id, task);
-        }
+        if (task.id && !map.has(task.id)) map.set(task.id, task);
       });
     });
     return Array.from(map.values());
@@ -69,7 +76,97 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
   const totalCount = data?.pages?.[0]?.totalCount ?? tasks.length;
   const hasTasks = tasks.length > 0;
 
-  // Observer مربوط بحاوية العمود مش الـ viewport
+  // ---- Optimistic move between columns ----
+  const moveTaskOptimistically = async (
+    task: Task,
+    fromStatus: string,
+    toStatus: string,
+  ) => {
+    if (!projectId || fromStatus === toStatus) return;
+
+    const fromKey = ["projectTasks", "board", projectId, fromStatus];
+    const toKey = ["projectTasks", "board", projectId, toStatus];
+
+    // snapshot للـ rollback
+    const previousFrom = queryClient.getQueryData(fromKey);
+    const previousTo = queryClient.getQueryData(toKey);
+
+    const updatedTask: Task = { ...task, status: toStatus };
+
+    // شيل من العمود القديم
+    queryClient.setQueryData(fromKey, (old: any) => {
+      if (!old?.pages) return old;
+      return {
+        ...old,
+        pages: old.pages.map((page: BoardPage) => ({
+          ...page,
+          tasks: page.tasks.filter((t) => t.id !== task.id),
+          totalCount: Math.max(0, (page.totalCount ?? 1) - 1),
+        })),
+      };
+    });
+
+    // ضيف في العمود الجديد (أول صفحة)
+    queryClient.setQueryData(toKey, (old: any) => {
+      if (!old?.pages?.length) {
+        return {
+          pages: [{ tasks: [updatedTask], totalCount: 1 }],
+          pageParams: [0],
+        };
+      }
+      return {
+        ...old,
+        pages: old.pages.map((page: BoardPage, index: number) =>
+          index === 0
+            ? {
+                ...page,
+                tasks: [
+                  updatedTask,
+                  ...page.tasks.filter((t) => t.id !== task.id),
+                ],
+                totalCount: (page.totalCount ?? page.tasks.length) + 1,
+              }
+            : page,
+        ),
+      };
+    });
+
+    try {
+      await updateTaskStatusAPI(task.id, toStatus);
+      // اختياري: invalidate للموبايل list
+      queryClient.invalidateQueries({
+        queryKey: ["projectTasks", "mobile", projectId],
+      });
+    } catch (err) {
+      // Rollback
+      queryClient.setQueryData(fromKey, previousFrom);
+      queryClient.setQueryData(toKey, previousTo);
+    }
+  };
+
+  // ---- Drop target ----
+  useEffect(() => {
+    const el = columnRef.current;
+    if (!el || !status) return;
+
+    return dropTargetForElements({
+      element: el,
+      getData: () => ({ type: "column", status }),
+      canDrop: ({ source }) =>
+        source.data.type === "task" && source.data.fromStatus !== status,
+      onDrop: ({ source }) => {
+        const { task, fromStatus } = source.data as {
+          task: Task;
+          fromStatus: string;
+        };
+        if (task && fromStatus) {
+          moveTaskOptimistically(task, fromStatus, status);
+        }
+      },
+    });
+  }, [status, projectId, queryClient]);
+
+  // ---- Infinite scroll ----
   useEffect(() => {
     const root = scrollRef.current;
     const target = loadMoreRef.current;
@@ -86,11 +183,7 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
           fetchNextPage();
         }
       },
-      {
-        root, // ← مهم: السكرول جوه العمود
-        rootMargin: "100px",
-        threshold: 0.1,
-      },
+      { root, rootMargin: "100px", threshold: 0.1 },
     );
 
     observer.observe(target);
@@ -98,12 +191,13 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
   }, [hasNextPage, isFetchingNextPage, isLoading, fetchNextPage, tasks.length]);
 
   const handlePlusClick = () => {
-    setSelectedStatus({status})
+    setSelectedStatus({ status: status || "" });
     if (projectId) navigate(`/project/${projectId}/tasks/new`);
   };
 
   return (
     <div
+      ref={columnRef}
       className={`${
         hasTasks || isLoading ? "flex" : "hidden md:flex"
       } mb-4 w-full min-w-[288px] shrink-0 flex-col gap-4 md:w-[288px]`}
@@ -163,11 +257,10 @@ const ColumnView = ({ projectId, status, title, color }: ColumnViewProps) => {
             </div>
           )}
 
-          {/* Sentinel */}
           <div ref={loadMoreRef} className="h-6 w-full shrink-0" />
         </div>
       ) : (
-        <div className="hidden flex-col items-center justify-center gap-2 rounded-md border border-dashed border-[#cbd5e1] p-3 text-slate-500 uppercase md:flex">
+        <div className="hidden min-h-[120px] flex-col items-center justify-center gap-2 rounded-md border border-dashed border-[#cbd5e1] p-3 text-slate-500 uppercase md:flex">
           <CalendarX strokeWidth={1.5} size={30} />
           <p className="mb-6 text-sm text-slate-400">NO TASKS.</p>
         </div>

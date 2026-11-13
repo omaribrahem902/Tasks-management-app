@@ -6,15 +6,20 @@ export const LIMIT = 6;
 export const useProjectEpicsDesktop = (
   projectId: string | undefined,
   page: number,
+  search?: string,
 ) => {
-  return useQuery({
-    queryKey: ["projectEpics", projectId, page],
+  const trimmedSearch = search?.trim() || "";
 
-    queryFn: () =>
+  return useQuery({
+    queryKey: ["projectEpics", projectId, page, trimmedSearch],
+
+    queryFn: ({ signal }) =>
       getEpicsAPI({
         projectId: projectId as string,
         limit: LIMIT,
         offset: (page - 1) * LIMIT,
+        search: trimmedSearch,
+        signal,
       }),
 
     enabled: !!projectId,

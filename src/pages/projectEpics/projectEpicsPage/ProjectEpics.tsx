@@ -1,3 +1,4 @@
+import { useState } from "react";
 import { useParams } from "react-router-dom";
 
 import EpicModalContainer from "../epicModal/EpicModalContainer";
@@ -12,6 +13,7 @@ const ProjectEpics = () => {
   }>();
 
   const isMobile = useIsMobile();
+  const [searchTerm, setSearchTerm] = useState("");
 
   if (!projectId) {
     return null;
@@ -19,15 +21,20 @@ const ProjectEpics = () => {
 
   return (
     <>
-      <ProjectEpicsHeader />
+      <ProjectEpicsHeader
+        searchTerm={searchTerm}
+        onSearchChange={setSearchTerm}
+      />
 
       {isMobile ? (
         <ProjectEpicsMobile
           projectId={projectId}
+          searchTerm={searchTerm}
         />
       ) : (
         <ProjectEpicsDesktop
           projectId={projectId}
+          searchTerm={searchTerm}
         />
       )}
 
