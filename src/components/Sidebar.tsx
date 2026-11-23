@@ -3,7 +3,6 @@ import {
   Boxes,
   CheckCheck,
   Users,
-  CircleAlert,
   ChevronLeft,
   LogOut,
 } from "lucide-react";
@@ -36,11 +35,6 @@ const sidebarLinks = [
     title: "Project Members",
     link: "/members",
     icon: Users,
-  },
-  {
-    title: "Project Details",
-    link: "/details",
-    icon: CircleAlert,
   },
 ];
 
