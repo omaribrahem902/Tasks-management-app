@@ -14,6 +14,7 @@ import CreateNewEpic from "./pages/createNewEpic/CreateNewEpic";
 import ProjectEpics from "./pages/projectEpics/projectEpicsPage/ProjectEpics";
 import AddNewTask from "./pages/addNewTaskPage/AddNewTask";
 import ProjectTasks from "./pages/projectTasksPage/ProjectTasksPage";
+import AcceptInvitationPage from "./pages/acceptInvitation/AcceptInvitationPage";
 
 export default function AppRoutes() {
 
@@ -28,14 +29,22 @@ export default function AppRoutes() {
         <Route path="/project/:projectId/details" element={<DetailsPage />} />
         <Route path="/project/:projectId/edit" element={<EditProjectPage />} />
         <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />}/>
+        <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />} />
         <Route path="/project/:projectId/epics" element={<ProjectEpics />} />
         <Route path="/project/:projectId/tasks/new" element={<AddNewTask />} />
       </Route>
 
+      <Route path="/invite" element={<AcceptInvitationPage />} />
       <Route path="/login" element={<AuthLayout children={<Login />} />} />
       <Route path="/signup" element={<AuthLayout children={<SignUp />} />} />
-      <Route path="/forgot-password" element={<AuthLayout children={<ForgotPassword />} />} />
-      <Route path="/create-new-password" element={<AuthLayout children={<CreateNewPassword />} />}/>
+      <Route
+        path="/forgot-password"
+        element={<AuthLayout children={<ForgotPassword />} />}
+      />
+      <Route
+        path="/create-new-password"
+        element={<AuthLayout children={<CreateNewPassword />} />}
+      />
     </Routes>
   );
 }

@@ -154,3 +154,16 @@ export const formatTaskDate = (dateStr?: string | null): string => {
     timeZone: "UTC",
   }).format(d);
 };
+
+export const getToday = (): string => {
+  const today = new Date();
+  const year = today.getFullYear();
+  const month = String(today.getMonth() + 1).padStart(2, "0");
+  const day = String(today.getDate()).padStart(2, "0");
+  return `${year}-${month}-${day}`;
+};
+
+export const normalizeStatus = (status?: string | null): string => {
+  if (!status) return "";
+  return status.trim().replace(/[-\s]+/g, "_").toUpperCase();
+};

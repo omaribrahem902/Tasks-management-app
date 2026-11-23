@@ -4,8 +4,10 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import { signUpSchema } from "./signupSchema";
 import { signUpAPI } from "./signupAPI";
 import { useMutation } from "@tanstack/react-query";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams, Link } from "react-router-dom";
+import { toast } from "react-hot-toast";
 import InputField from "../../components/InputField";
+import { getSafeRedirectUrl } from "../../utils/safeRedirect";
 
 type FormData = z.infer<typeof signUpSchema>;
 
@@ -19,6 +21,8 @@ const signUpFields: { label: string; id: keyof FormData }[] = [
 
 const SignUp = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const redirectParam = searchParams.get("redirect");
 
   const {
     register,
@@ -30,10 +34,16 @@ const SignUp = () => {
 
   const mutation = useMutation({
     mutationFn: signUpAPI,
-     onSuccess: () => {
+    onSuccess: () => {
       console.log("User signed up successfully");
-    navigate("/");
-  },
+      const destination = redirectParam
+        ? getSafeRedirectUrl(redirectParam)
+        : "/";
+      navigate(destination, { replace: true });
+    },
+    onError: (error: Error) => {
+      toast.error(error.message || "Failed to sign up.");
+    },
   });
 
   const onSubmit = (data: FormData) => {
@@ -45,11 +55,14 @@ const SignUp = () => {
         job_title: data.jobTitle || "",
       },
     });
-    console.log(data);
   };
 
+  const loginLink = redirectParam
+    ? `/login?redirect=${encodeURIComponent(redirectParam)}`
+    : "/login";
+
   return (
-    <section className=" flex justify-start md:justify-center md:items-center flex-col bg-white w-xl max-w-xl p-6 md:p-12 rounded-lg">
+    <section className="flex justify-start md:justify-center md:items-center flex-col bg-white w-xl max-w-xl p-6 md:p-12 rounded-lg">
       <h1 className="mb-1.5">Create your workspace</h1>
       <p className="slate-2 body-md">
         Join the editorial approach to task management
@@ -63,6 +76,11 @@ const SignUp = () => {
             key={field.id}
             label={field.label}
             id={field.id}
+            type={
+              field.id === "password" || field.id === "confirmPassword"
+                ? "password"
+                : "text"
+            }
             register={register}
             errors={errors}
           />
@@ -70,15 +88,16 @@ const SignUp = () => {
         <button
           className="btn btn-custom"
           type="submit"
+          disabled={mutation.isPending}
         >
-          Create Account
+          {mutation.isPending ? "Creating Account..." : "Create Account"}
         </button>
         <div className="center-flex gap-2">
           <p>
             Already have an account?{" "}
-            <a className="primary" href="/login">
+            <Link className="primary" to={loginLink}>
               Log in
-            </a>
+            </Link>
           </p>
         </div>
       </form>
@@ -87,4 +106,3 @@ const SignUp = () => {
 };
 
 export default SignUp;
-

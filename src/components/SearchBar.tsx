@@ -26,6 +26,11 @@ const SearchBar = ({
         type="text"
         value={value ?? ""}
         onChange={(e) => onChange?.(e.target.value)}
+        onKeyDown={(e) => {
+          if (e.key === "Enter") {
+            e.preventDefault();
+          }
+        }}
         placeholder={placeholder}
         className="body-md ml-3 w-full bg-transparent focus:outline-none"
       />

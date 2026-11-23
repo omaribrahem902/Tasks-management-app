@@ -22,7 +22,7 @@ export interface ProjectTaskDetail {
   reporter_name?: string | null;
   due_date?: string | null;
   created_at?: string | null;
-  [key: string]: any;
+  [key: string]: unknown;
 }
 
 export const getTaskDetails = async (
@@ -51,10 +51,56 @@ export const getTaskDetails = async (
       const parsed = JSON.parse(errorText);
       parsedMessage = parsed.message || parsed.hint || errorText;
     } catch {
-      // not JSON
+      console.log(errorText)
     }
     throw new Error(parsedMessage || "Failed to load task details");
   }
 
   return res.json();
+};
+
+export interface TaskUpdatePayload {
+  title?: string;
+  description?: string | null;
+  assignee_id?: string | null;
+  epic_id?: string | null;
+  due_date?: string | null;
+  status?: string;
+}
+
+export const updateTaskDetailsAPI = async (
+  taskId: string,
+  payload: TaskUpdatePayload
+): Promise<ProjectTaskDetail> => {
+  const session = await getSession();
+
+  const url = `${import.meta.env.VITE_SUPABASE_URL}/rest/v1/tasks?id=eq.${encodeURIComponent(
+    taskId
+  )}`;
+
+  const res = await fetch(url, {
+    method: "PATCH",
+    headers: {
+      apikey: import.meta.env.VITE_SUPABASE_API_KEY,
+      Authorization: `Bearer ${session.access_token}`,
+      "Content-Type": "application/json",
+      Prefer: "return=representation",
+    },
+    body: JSON.stringify(payload),
+  });
+
+  if (!res.ok) {
+    const errorText = await res.text();
+    let parsedMessage = errorText;
+    try {
+      const parsed = JSON.parse(errorText);
+      parsedMessage = parsed.message || parsed.hint || errorText;
+    } catch {
+      // not JSON
+    }
+    throw new Error(parsedMessage || "Failed to update task");
+  }
+
+  const data = await res.json();
+  return Array.isArray(data) ? data[0] : data;
 };

@@ -13,7 +13,7 @@ import clsx from "clsx";
 import { tasklyIcon } from "../assets/icons";
 import { useMutation } from "@tanstack/react-query";
 import { logoutAPI } from "../auth/logout/logout";
-import {useNavigate} from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { useProjectStore } from "../stores/useProjectStore";
 
 const sidebarLinks = [
@@ -49,37 +49,37 @@ interface SidebarProps {
   closeSidebar: () => void;
 }
 
-const Sidebar = ({isOpen}: SidebarProps) => {
+const Sidebar = ({ isOpen }: SidebarProps) => {
   const [collapsed, setCollapsed] = useState(false);
   const [selected, setSelected] = useState(0);
   const navigate = useNavigate();
   const currentProject = useProjectStore((state) => state.currentProject);
 
-const handleClick = (index: number,link: string) => {
-  if(currentProject == undefined && link !== "/project") {
-    return;
-  }
-  setSelected(index);
-  if (link === "/project") {
-    navigate(link);
-    return;
-  }
-  navigate(`project/${currentProject?.id}${link}`);
-};
+  const handleClick = (index: number, link: string) => {
+    if (currentProject == undefined && link !== "/project") {
+      return;
+    }
+    setSelected(index);
+    if (link === "/project") {
+      navigate(link);
+      return;
+    }
+    navigate(`project/${currentProject?.id}${link}`);
+  };
 
-const logoutMutation = useMutation({
-  mutationFn: logoutAPI,
-  onSuccess: () => {
-    navigate("/login");
-  },
-});
+  const logoutMutation = useMutation({
+    mutationFn: logoutAPI,
+    onSuccess: () => {
+      navigate("/login");
+    },
+  });
 
   return (
     <>
       <aside
         className={clsx(
           " md:relative absolute min-h-screen border-r bg-[#f4f5fb] flex flex-col justify-between transition-all duration-75 z-50",
-          collapsed ? "w-[88px]" : "w-[260px]",
+          collapsed ? "w-[88px]" : "min-w-[260px]",
           isOpen ? "translate-x-0 " : "-translate-x-full md:translate-x-0",
         )}
       >
@@ -108,7 +108,7 @@ const logoutMutation = useMutation({
                           : "hover:bg-white/70 text-slate-700",
                         collapsed && "justify-center",
                       )}
-                      onClick={() => handleClick(index,link.link)}
+                      onClick={() => handleClick(index, link.link)}
                     >
                       <Icon size={20} />
 
@@ -144,7 +144,7 @@ const logoutMutation = useMutation({
             )}
           </button>
 
-          <button 
+          <button
             className="w-full flex items-center gap-3 rounded-xl px-4 py-3 hover:bg-red-50 transition-all text-red-600"
             onClick={() => logoutMutation.mutate()}
           >
@@ -171,7 +171,7 @@ const logoutMutation = useMutation({
                     )}
                     onClick={() => handleClick(index, link.link)}
                   >
-                    <Icon size={18} />    
+                    <Icon size={18} />
                     <span className="text-[10px] font-semibold">{text}</span>
                   </button>
                 </li>
