@@ -8,7 +8,6 @@ import PrivateRoutes from "./utils/PrivateRoutes";
 import AuthLayout from "./auth/AuthLayout";
 import AddProject from "./pages/addNewProjectpage/AddProject";
 import MembersPage from "./pages/members/MembersPage";
-import DetailsPage from "./pages/DetailsPage";
 import EditProjectPage from "./pages/editProject/EditProject";
 import CreateNewEpic from "./pages/createNewEpic/CreateNewEpic";
 import ProjectEpics from "./pages/projectEpics/projectEpicsPage/ProjectEpics";
@@ -26,7 +25,6 @@ export default function AppRoutes() {
         <Route path="/project/add" element={<AddProject />} />
         <Route path="/project/:projectId/members" element={<MembersPage />} />
         <Route path="/project/:projectId/tasks" element={<ProjectTasks />} />
-        <Route path="/project/:projectId/details" element={<DetailsPage />} />
         <Route path="/project/:projectId/edit" element={<EditProjectPage />} />
         <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />}/>
         <Route path="/project/:projectId/epics/new" element={<CreateNewEpic />} />
