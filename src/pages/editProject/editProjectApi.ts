@@ -1,8 +1,8 @@
 import {getSession} from "../../utils/getSession";
 
-interface EditProjectPayload {
-  name: string;
-  description: string;
+export interface EditProjectPayload {
+  name?: string;
+  description?: string;
 }
 
 export const editProjectAPI = async (

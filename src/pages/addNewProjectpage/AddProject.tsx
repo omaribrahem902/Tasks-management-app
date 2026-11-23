@@ -7,7 +7,7 @@ import { addNewProjectSchema } from "../../schemas/addNewProjectSchema";
 import { useMutation } from "@tanstack/react-query";
 import InputField from "../../components/InputField";
 import { addNewProjectAPI } from "./addNewProjectApi";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { useQueryClient } from "@tanstack/react-query";
 

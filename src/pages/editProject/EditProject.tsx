@@ -6,10 +6,9 @@ import { zodResolver } from "@hookform/resolvers/zod/dist/zod.js";
 import { addNewProjectSchema } from "../../schemas/addNewProjectSchema";
 import { useMutation } from "@tanstack/react-query";
 import InputField from "../../components/InputField";
-import { useNavigate, useParams } from "react-router";
+import { useNavigate, useParams } from "react-router-dom";
 import { toast, Toaster } from "react-hot-toast";
 import { editProjectAPI } from "./editProjectApi";
-import { useProjectStore } from "../../stores/useProjectStore";
 
 
 
@@ -22,7 +21,6 @@ const editProjectFields: { label: string; id: keyof FormData }[] = [
 const EditProject = () => {
   const navigate = useNavigate();
   const { projectId } = useParams<{ projectId: string }>();
-  const currentProject = useProjectStore((state) => state.currentProject);
   const {
     register,
     handleSubmit,
@@ -30,6 +28,7 @@ const EditProject = () => {
     formState: { errors },
   } = useForm<FormData>({
     resolver: zodResolver(addNewProjectSchema),
+    
   });
 
   const mutation = useMutation({
@@ -85,7 +84,6 @@ const EditProject = () => {
                 id={field.id}
                 register={register}
                 errors={errors}
-                value={currentProject ? currentProject[field.id] : ""}
               />
             ))}
             <div className="text-sm text-slate-500 text-right">
@@ -93,6 +91,7 @@ const EditProject = () => {
             </div>
             <div className="flex flex-col-reverse md:flex-row justify-between mt-6 mb-12">
               <button
+              type="button"
                 onClick={() => navigate("/project")}
                 className="cursor-pointer"
               >

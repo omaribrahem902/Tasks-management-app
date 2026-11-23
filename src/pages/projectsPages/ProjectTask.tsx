@@ -1,6 +1,6 @@
 import { SquarePen } from "lucide-react";
 import { useProjectStore } from "../../stores/useProjectStore";
-import { useNavigate } from "react-router";
+import { useNavigate } from "react-router-dom";
 import { formatDate } from "../../utils/formatDate";
 export interface ProjectTaskProps {
   id: string;
